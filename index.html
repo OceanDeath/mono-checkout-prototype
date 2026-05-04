@@ -261,29 +261,33 @@
     color: #306eff;
     line-height: 16px;
   }
-  /* «3 товари» — y=144 в figma, относительно карточки top=48 */
+  /* «3 товари» — top=52 (опущено на 4 от figma 48 для большего воздуха) */
   .cart-card .qty {
     position: absolute;
-    left: 16px; top: 48px;
+    left: 16px; top: 52px;
     font-weight: 400;
     font-size: 14px;
     line-height: 16px;
     color: #808080;
   }
-  /* «85 198 ₴» — y=160, top=64 */
+  /* «85 198 ₴» — top=72 (опущено на 8 от figma 64 для большего воздуха
+     между qty и price) */
   .cart-card .price {
     position: absolute;
-    left: 16px; top: 64px;
+    left: 16px; top: 72px;
     font-weight: 700;
     font-size: 20px;
     line-height: 24px;
     letter-spacing: -0.064px;
     color: #000;
   }
-  /* Фотки — y=144, top=48. Размер 48×48, зазор между фотками 8px (по figma: 183, 239, 295). */
+  /* Миниатюры товаров — прижаты к правому краю с отступом 16px.
+     При 3 товарах визуально занимают 160px справа (48×3 + 8×2),
+     при 2 товарах — 104px (48×2 + 8). flex выстраивает их слева-направо
+     внутри блока, но сам блок начинается с правого края благодаря right=16. */
   .cart-card .products {
     position: absolute;
-    left: 167px; top: 48px;  /* первая фотка стоит на x=183 (167 от карточки) */
+    right: 16px; top: 48px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -414,6 +418,7 @@
     left: 16px; top: 18px;
     right: 16px;
     height: 32px;
+    cursor: pointer;
   }
   .city-icon {
     position: absolute;
@@ -1287,6 +1292,118 @@
   }
   .store-item:last-child::after { display: none; }
 
+  /* ======================================================================
+     Модал выбора города (figma frame 6299:7248)
+     Открывается по клику на блок «Ваше місто / м. Одеса». Структура — как
+     у pickupModal (overlay → backdrop → sheet с slideUp), но шит выше:
+     top=56 (от status bar), h=754. Содержит drag-handle, поле поиска,
+     список 5 городов (название + область, разделители hairline).
+     ====================================================================== */
+  .city-modal {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .city-modal.open {
+    pointer-events: auto;
+    opacity: 1;
+  }
+  .city-modal .backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.56);
+  }
+  .city-sheet {
+    position: absolute;
+    left: 0; right: 0;
+    top: 56px;
+    height: 756px;
+    background: #fff;
+    border-radius: 16px 16px 0 0;
+    transform: translateY(110%);
+    transition: transform 0.3s cubic-bezier(.2,.7,.2,1);
+    overflow: hidden;
+  }
+  .city-modal.open .city-sheet {
+    transform: translateY(0);
+  }
+  /* Drag-handle сверху шита */
+  .city-sheet .drag-handle {
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    transform: translateX(-50%);
+    width: 48px; height: 4px;
+    border-radius: 2px;
+    background: rgba(0,0,0,0.18);
+  }
+  /* Поле поиска */
+  .city-sheet .city-search {
+    position: absolute;
+    left: 16px; top: 32px;
+    width: 343px; height: 48px;
+    background: #f4f4f4;
+    border-radius: 16px;
+    display: flex; align-items: center;
+    padding-left: 14px;
+    gap: 10px;
+  }
+  .city-sheet .city-search .search-icon {
+    width: 20px; height: 20px;
+    flex-shrink: 0;
+  }
+  .city-sheet .city-search .search-icon svg {
+    width: 20px; height: 20px;
+    display: block;
+  }
+  .city-sheet .city-search .placeholder {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 24px;
+    color: #808080;
+    letter-spacing: -0.0448px;
+  }
+  /* Список городов */
+  .city-list {
+    position: absolute;
+    left: 0; right: 0; top: 96px; bottom: 0;
+    overflow-y: auto;
+  }
+  .city-row {
+    position: relative;
+    margin: 0 16px;
+    padding: 16px 0;
+    cursor: pointer;
+  }
+  .city-row .city-row-name {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.0512px;
+    color: #000;
+    margin: 0;
+  }
+  .city-row .city-row-region {
+    margin: 4px 0 0 0;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    letter-spacing: -0.021px;
+    color: #808080;
+  }
+  /* Тонкий разделитель снизу */
+  .city-row::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1px;
+    background: rgba(0,0,0,0.06);
+  }
+  .city-row:last-child::after { display: none; }
+
 </style>
 </head>
 <body>
@@ -1341,10 +1458,10 @@
       <div class="card delivery-card" id="deliveryCard">
 
         <!-- Город -->
-        <div class="city-block">
+        <div class="city-block" id="cityBlock">
           <div class="city-icon"><img src="assets/Location.svg" alt=""></div>
           <div class="city-label">Ваше місто</div>
-          <div class="city-name">м. Одеса</div>
+          <div class="city-name" id="cityName">м. Одеса</div>
           <div class="city-chevron"><img src="assets/Chevron_Right_MD.svg" alt=""></div>
         </div>
 
@@ -1481,6 +1598,45 @@
         <button class="sheet-back-btn" id="sheetBackBtn">Повернутись</button>
         <button class="sheet-primary-btn">Прибрати з замовлення</button>
         <div class="sheet-home-indicator"><img src="assets/home_indicator.svg" alt=""></div>
+      </div>
+    </div>
+
+    <!-- ====== Модал выбора города ====== -->
+    <div class="city-modal" id="cityModal">
+      <div class="backdrop"></div>
+      <div class="city-sheet">
+        <div class="drag-handle"></div>
+        <div class="city-search">
+          <div class="search-icon">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="9" cy="9" r="6" stroke="#808080" stroke-width="1.6"/>
+              <path d="m17 17-3.5-3.5" stroke="#808080" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="placeholder">Місто/ Населений пункт</div>
+        </div>
+        <div class="city-list">
+          <div class="city-row" data-city="м. Київ">
+            <div class="city-row-name">м. Київ</div>
+            <div class="city-row-region">Київська обл.</div>
+          </div>
+          <div class="city-row" data-city="м. Одеса">
+            <div class="city-row-name">м. Одеса</div>
+            <div class="city-row-region">Одеська обл.</div>
+          </div>
+          <div class="city-row" data-city="м. Львів">
+            <div class="city-row-name">м. Львів</div>
+            <div class="city-row-region">Львівська обл.</div>
+          </div>
+          <div class="city-row" data-city="м. Дніпро">
+            <div class="city-row-name">м. Дніпро</div>
+            <div class="city-row-region">Дніпропетровська обл.</div>
+          </div>
+          <div class="city-row" data-city="м. Херсон">
+            <div class="city-row-name">м. Херсон</div>
+            <div class="city-row-region">Херсонська обл.</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1771,6 +1927,26 @@
       document.getElementById('continueBtn').classList.remove('disabled');
       // Возврат на чекаут
       showScreen('checkout');
+    });
+  });
+
+  // ===== Модал выбора города =====
+  // Открывается по клику на блок «Ваше місто / м. Одеса». Закрывается
+  // тапом по backdrop или drag-handle, или после выбора города из списка.
+  // Выбранный город меняет текст в .city-name на чекауте.
+  const cityModal = document.getElementById('cityModal');
+  function openCityModal()  { cityModal.classList.add('open'); }
+  function closeCityModal() { cityModal.classList.remove('open'); }
+  document.getElementById('cityBlock').addEventListener('click', openCityModal);
+  cityModal.querySelector('.backdrop').addEventListener('click', closeCityModal);
+  cityModal.querySelector('.drag-handle').addEventListener('click', closeCityModal);
+  cityModal.querySelectorAll('.city-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const city = row.getAttribute('data-city');
+      if (city) {
+        document.getElementById('cityName').textContent = city;
+      }
+      closeCityModal();
     });
   });
 </script>
