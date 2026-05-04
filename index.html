@@ -103,10 +103,12 @@
     border-radius: 44px;
   }
 
-  /* Прокручиваемая область — занимает весь phone и скроллит внутри себя.
-     Нижний padding учитывает высоту bottom-bar (112px), чтобы контент не уезжал
-     под кнопку "Продовжити". Верхний padding не нужен — карточки стоят на
-     абсолютных координатах относительно .scroll-area. */
+  /* Прокручиваемая область — занимает весь phone, скроллит контент внутри.
+     Карточки лежат внутри в потоке (column flex с gap=20px), поэтому
+     scroll-area имеет padding-top=96 чтобы первая карточка стартовала под
+     top-chrome. Снизу — большой отступ (132 = 112 под bottom-bar + 20 воздуха),
+     чтобы при докрутке вниз последняя карточка не упиралась в bottom-bar и
+     было ощущение естественного завершения скролла. */
   .scroll-area {
     position: absolute;
     inset: 0;
@@ -114,13 +116,11 @@
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     z-index: 10;
-    /* Высота "холста" задаётся через scroll-spacer в конце контента */
-  }
-  .scroll-spacer {
-    position: relative;
-    width: 1px;
-    height: 945px;
-    pointer-events: none;
+    padding: 96px 0 132px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
   }
 
   /* === Hero / Top chrome ===
@@ -214,19 +214,23 @@
   }
   .back-btn img { width: 24px; height: 24px; display: block; }
 
-  /* === Карточки общая стилизация === */
+  /* === Карточки общая стилизация ===
+     Карточки лежат в потоке внутри .scroll-area (column flex с gap=20px).
+     Сама карточка — относительная (relative), всё содержимое внутри по-прежнему
+     на абсолютных координатах. */
   .card {
-    position: absolute;
+    position: relative;
     background: #fff;
     border-radius: 16px;
+    margin: 0 16px;        /* отступы от краёв phone (16+16=32, остаётся 343px) */
     box-shadow: 0 12px 24px -8px rgba(0, 30, 80, 0.10),
                 0 4px 8px -2px rgba(0, 30, 80, 0.05);
+    flex-shrink: 0;        /* запрет flex-сжатия — высота карточки = её content */
   }
 
   /* === Карточка Кошик === */
   .cart-card {
-    left: 16px; top: 96px;
-    width: 343px; height: 112px;
+    height: 112px;
   }
   .cart-card .header {
     position: absolute;
@@ -299,8 +303,7 @@
 
   /* === Карточка оплаты === */
   .payment-card {
-    left: 16px; top: 228px;
-    width: 343px; height: 136px;
+    height: 136px;
   }
   /* Сегмент-переключатель */
   .segment {
@@ -382,14 +385,15 @@
        opt-dept top=128 свёрнута, opt-courier top=197 раскрыта, separator top=181.
      === */
   .delivery-card {
-    left: 16px;
-    top: 384px;
-    width: 343px;
-    /* Стейт A figma=357. С запасом на 4-строчный адрес в Chromium = 377. */
+    /* figma: A=357, B=325. В Chromium-fallback шрифт чуть шире, добавляем
+       +20 на возможную лишнюю строку адреса. 20px воздуха снизу — встроены
+       в figma-значения, не наращиваем дополнительно. */
     min-height: 377px;
     transition: min-height 0.25s cubic-bezier(.2,.6,.2,1);
   }
-  .delivery-card.state-courier { min-height: 325px; }
+  .delivery-card.state-courier {
+    min-height: 345px;
+  }
 
   /* --- Город (верхний блок) --- */
   /* По Figma: иконка top=18, h=32. city-label на y=400 (top=16, h=16),
@@ -474,21 +478,26 @@
     border-radius: 50%;
     object-fit: cover;
   }
-  /* Бейдж: NP_Badge.svg внутри 34×34, но сам кружок логотипа лишь 18×18
-     по центру (остальное — тень). Показываем его в 22×22 — этого
-     достаточно чтобы видеть тень и сам логотип читаемо.
-     Позиция: правый-нижний угол иконки (32×32) с заходом внутрь круга:
-     центр бейджа должен быть на (28, 28) от левого верха иконки,
-     значит left = 28 - 11 = 17, top = 28 - 11 = 17. */
+  /* Бейдж "Нова Пошта" — 18×18 по дизайну.
+     SVG NP_Badge.svg внутри 34×34 (центрированный кружок + тень-blur по краям).
+     Чтобы видимый красный кружок получился 18×18, размещаем сам img как 34×34
+     с отрицательными отступами — тень тогда не обрезается.
+     Позиция: правый-нижний угол иконки (32×32), бейдж заходит на круг.
+     По Figma бейдж стоит на (50, 530) при иконке (32, 512), это даёт
+     left=18, top=18 от иконки. Это координаты ЦЕНТРА видимого кружка
+     при размере бейджа 18 (то есть центр на 18+9=27, 18+9=27). */
   .delivery-option .opt-icon .badge {
     position: absolute;
-    left: 17px; top: 17px;
-    width: 22px; height: 22px;
+    /* центр 18×18 видимого кружка должен быть на (27, 27) от иконки.
+       Сам img растягиваем до 34×34 (видимый кружок 18 + тень 8 с каждой стороны),
+       размещаем чтобы центр img совпал с (27, 27) → left = 27-17 = 10. */
+    left: 10px; top: 10px;
+    width: 34px; height: 34px;
     z-index: 2;
     pointer-events: none;
   }
   .delivery-option .opt-icon .badge img {
-    width: 22px; height: 22px;
+    width: 34px; height: 34px;
     display: block;
   }
 
@@ -539,15 +548,16 @@
   }
 
   /* Кнопка "Змінити …" — Bold синий + иконка локации слева.
-     По figma: address заканчивается на y=625 (отделение) или y=661 (курьер),
-     change-link начинается на y=637 (отделение) или y=673 (курьер) — gap 12px. */
+     Иконка выровнена по левому краю opt-body (туда же что title и sub),
+     чтобы кнопка визуально не "висела в воздухе". */
   .delivery-option .change-link {
-    margin: 12px 0 0 15px;
+    margin: 12px 0 0 0;
     height: 24px;
     display: none;
     align-items: center;
     gap: 4px;
     cursor: pointer;
+    width: max-content;     /* чтобы flex-контейнер был шириной по контенту */
   }
   .delivery-option.selected .change-link {
     display: flex;
@@ -608,9 +618,7 @@
 
   /* === Карточка пользователя === */
   .user-card {
-    left: 16px; top: 761px;
-    width: 343px; height: 72px;
-    /* высота карточки чуть больше viewport-а — она частично уходит под bottom bar */
+    height: 72px;
   }
   .user-card .avatar {
     position: absolute;
@@ -770,7 +778,7 @@
           <div class="opt-body">
             <div class="title">Кур’єром безкоштовно</div>
             <div class="sub">Не пізніше Сб, 28 березня</div>
-            <div class="address">вул. Новосельского 69/71, під’зд 2,<br>поверх 4, кв. 44</div>
+            <div class="address">вул. Новосельского 69/71, під’зд 2, поверх 4, кв. 44</div>
             <div class="change-link">
               <img src="assets/Location_edit.svg" alt="">
               <span>Змінити адресу</span>
@@ -789,8 +797,6 @@
         <div class="uchevron"><img src="assets/Chevron_Right_MD.svg" alt=""></div>
       </div>
 
-      <!-- Распорка задаёт высоту скроллируемого контента -->
-      <div class="scroll-spacer"></div>
     </div>
 
     <!-- ====== Шапка-фон (за карточками, плавно сжимается при скролле) ====== -->
