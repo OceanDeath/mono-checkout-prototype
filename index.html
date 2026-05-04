@@ -1051,32 +1051,33 @@
   .pickup-header .back-btn img {
     width: 24px; height: 24px;
     display: block;
-    /* back_icon.svg по дефолту белый — на белом хедере его не видно.
-       Заливка чёрной через filter (т.к. сама svg-иконка использует currentColor
-       мы не контролируем — но filter:invert даёт чёрный из белого). */
-    filter: invert(1);
   }
-  .pickup-header .pickup-title {
+  /* Заголовок + лого мерчанта во flex-row: лого прижимается прямо к концу
+     текста с фиксированным зазором. По figma лого на x=282 при тексте
+     "Самовивіз з магазину" — это ~8-10px после слова "магазину". */
+  .pickup-header .pickup-title-row {
     position: absolute;
     left: 16px; top: 88px;
+    right: 16px;
     height: 32px;
-    width: 278px;
-    display: flex; align-items: center;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pickup-header .pickup-title-row .pickup-title {
     font-weight: 700;
     font-size: 24px;
     line-height: 32px;
     letter-spacing: -0.36px;
     color: #000;
   }
-  /* Лого мерчанта в хедере (24×24, темный кружок KTC) */
-  .pickup-header .merchant-pill {
-    position: absolute;
-    right: 16px; top: 92px;
+  .pickup-header .pickup-title-row .merchant-pill {
     width: 24px; height: 24px;
     border-radius: 50%;
     overflow: hidden;
+    flex-shrink: 0;
   }
-  .pickup-header .merchant-pill img {
+  .pickup-header .pickup-title-row .merchant-pill img {
     width: 24px; height: 24px;
     display: block;
     object-fit: cover;
@@ -1450,10 +1451,12 @@
       <!-- Хедер: back + заголовок + лого мерчанта -->
       <div class="pickup-header">
         <div class="back-btn" id="pickupBackBtn">
-          <img src="assets/back_icon.svg" alt="back">
+          <img src="assets/back_icon_blue.svg" alt="back">
         </div>
-        <div class="pickup-title">Самовивіз з магазину</div>
-        <div class="merchant-pill"><img src="assets/KTC_logo.png" alt=""></div>
+        <div class="pickup-title-row">
+          <div class="pickup-title">Самовивіз з магазину</div>
+          <div class="merchant-pill"><img src="assets/KTC_logo.png" alt=""></div>
+        </div>
       </div>
 
       <!-- Поле поиска -->
