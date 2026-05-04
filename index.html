@@ -684,6 +684,196 @@
   }
   .home-indicator img { width: 135px; height: 5px; display: block; }
 
+  /* === Модал «Товари без самовивозу» ===
+     По figma (frame 6285:6708):
+     • backdrop — чёрный 60% непрозрачности на весь экран
+     • bottom-sheet — y=300, h=512, верхние углы скруглены 24px, bg=#f4f4f4
+     • заголовок Bold 20 на y=24 от sheet
+     • описание Regular 14 серое на y=56 от sheet
+     • карточка товара (white) на y=116 от sheet, h=212
+     • кнопка «Повернутись» — текстовая, синий, по центру, низ=124 от sheet
+     • кнопка «Прибрати з замовлення» — синий градиент, низ=40 от sheet
+     • home indicator — низ=8 */
+
+  .modal-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .modal-overlay.open {
+    pointer-events: auto;
+    opacity: 1;
+  }
+  .modal-overlay .backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+  }
+  .modal-sheet {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 512px;
+    background: #f4f4f4;
+    border-radius: 24px 24px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(.2,.7,.2,1);
+  }
+  .modal-overlay.open .modal-sheet {
+    transform: translateY(0);
+  }
+
+  /* Контент шита */
+  .modal-sheet .sheet-title {
+    position: absolute;
+    left: 16px; top: 24px;
+    width: 343px;
+    height: 32px;
+    display: flex; align-items: center;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: 0.38px;
+    color: #000;
+  }
+  .modal-sheet .sheet-desc {
+    position: absolute;
+    left: 16px; top: 56px;
+    width: 343px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 16px;
+    color: #808080;
+  }
+
+  /* Карточка товара внутри модала */
+  .sheet-product {
+    position: absolute;
+    left: 16px; top: 116px;
+    width: 343px; height: 212px;
+    background: #fff;
+    border-radius: 16px;
+  }
+  .sheet-product .merchant {
+    position: absolute;
+    left: 16px; top: 16px;
+    height: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  /* Бейдж Фокстрот — готовый PNG-лого 20×20 (лиса в жёлтом кружке) */
+  .sheet-product .merchant .badge {
+    width: 20px; height: 20px;
+  }
+  .sheet-product .merchant .badge img {
+    width: 20px; height: 20px;
+    display: block;
+  }
+  .sheet-product .merchant .name {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #808080;
+  }
+  .sheet-product .product-name {
+    position: absolute;
+    left: 16px; top: 36px;
+    width: 220px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #000;
+  }
+  .sheet-product .product-price {
+    position: absolute;
+    left: 16px; top: 92px;
+    height: 24px;
+    display: flex; align-items: center;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.0576px;
+    color: #000;
+  }
+  .sheet-product .product-image {
+    position: absolute;
+    right: 12px; top: 12px;
+    width: 64px; height: 64px;
+    opacity: 0.6;
+  }
+  .sheet-product .product-image img {
+    width: 64px; height: 64px;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* Жёлтая warning-плашка с предупреждением */
+  .sheet-product .warning {
+    position: absolute;
+    left: 16px; right: 16px; bottom: 16px;
+    height: 64px;
+    background: #f2f2f2;
+    border-radius: 12px;
+    display: flex; align-items: center;
+    padding: 0 14px;
+    gap: 14px;
+  }
+  .sheet-product .warning .icon {
+    width: 20px; height: 20px;
+    flex-shrink: 0;
+  }
+  .sheet-product .warning .icon svg {
+    width: 20px; height: 20px;
+    display: block;
+  }
+  .sheet-product .warning .text {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+    color: #000;
+  }
+
+  /* Кнопки в модале */
+  .modal-sheet .sheet-back-btn {
+    position: absolute;
+    left: 16px; bottom: 124px;
+    width: 343px; height: 56px;
+    background: transparent;
+    border: 0;
+    color: #306eff;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: -0.0512px;
+    cursor: pointer;
+  }
+  .modal-sheet .sheet-primary-btn {
+    position: absolute;
+    left: 16px; bottom: 40px;
+    width: 343px; height: 56px;
+    background: linear-gradient(to right, #3083ff 0%, #306aff 100%);
+    border-radius: 16px;
+    border: 0;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: -0.0512px;
+    cursor: pointer;
+    transition: transform 0.08s ease, opacity 0.15s ease;
+  }
+  .modal-sheet .sheet-primary-btn:active { transform: scale(0.985); opacity: 0.92; }
+  .modal-sheet .sheet-home-indicator {
+    position: absolute;
+    left: 120px; bottom: 8px;
+    width: 135px; height: 5px;
+  }
+  .modal-sheet .sheet-home-indicator img {
+    width: 135px; height: 5px;
+    display: block;
+  }
+
 </style>
 </head>
 <body>
@@ -822,6 +1012,42 @@
       <div class="home-indicator"><img src="assets/home_indicator.svg" alt=""></div>
     </div>
 
+    <!-- ====== Модал «Товари без самовивозу» ====== -->
+    <div class="modal-overlay" id="pickupModal">
+      <div class="backdrop"></div>
+      <div class="modal-sheet">
+        <div class="sheet-title">Товари без самовивозу</div>
+        <div class="sheet-desc">У вашому замовленні є товари, за якими самовивіз наразі недоступний</div>
+
+        <!-- карточка проблемного товара -->
+        <div class="sheet-product">
+          <div class="merchant">
+            <div class="badge"><img src="assets/Foxtrot_logo.png" alt=""></div>
+            <div class="name">Фокстрот</div>
+          </div>
+          <div class="product-name">Миша Logitech MX Master 3S Performance Wireless</div>
+          <div class="product-price">3 999 ₴</div>
+          <div class="product-image"><img src="assets/product_cart_3.png" alt=""></div>
+
+          <div class="warning">
+            <div class="icon">
+              <!-- треугольник предупреждения, цвет жёлтый по дизайну -->
+              <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 1.667 18.333 16.667H1.667L10 1.667Z" fill="#FFCB05"/>
+                <rect x="9.167" y="7.5" width="1.667" height="5" rx="0.833" fill="#000"/>
+                <rect x="9.167" y="13.333" width="1.667" height="1.667" rx="0.833" fill="#000"/>
+              </svg>
+            </div>
+            <div class="text">Ми приберемо товар з замовлення, але він залишиться в кошику</div>
+          </div>
+        </div>
+
+        <button class="sheet-back-btn" id="sheetBackBtn">Повернутись</button>
+        <button class="sheet-primary-btn">Прибрати з замовлення</button>
+        <div class="sheet-home-indicator"><img src="assets/home_indicator.svg" alt=""></div>
+      </div>
+    </div>
+
     </div><!-- /.phone -->
   </div><!-- /.device -->
 
@@ -841,13 +1067,38 @@
   onScroll();
 
   // ===== Сегменты =====
+  // Стандартное переключение active по клику на любой сегмент,
+  // КРОМЕ: клик на "Самовивіз" в карточке доставки → открывает модал
+  // "Товари без самовивозу" и НЕ меняет active (остаётся "Доставка").
   document.querySelectorAll('.segment').forEach(seg => {
     seg.querySelectorAll('.seg').forEach(btn => {
       btn.addEventListener('click', () => {
+        // Спецкейс: «Самовивіз» в карточке доставки.
+        if (btn.dataset.seg === 'delivery-pickup') {
+          openPickupModal();
+          return;
+        }
         seg.querySelectorAll('.seg').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
       });
     });
+  });
+
+  // ===== Модал "Товари без самовивозу" =====
+  const pickupModal = document.getElementById('pickupModal');
+  function openPickupModal() {
+    pickupModal.classList.add('open');
+  }
+  function closePickupModal() {
+    pickupModal.classList.remove('open');
+  }
+  // Кнопка "Повернутись" закрывает модал, оставляя активным "Доставка".
+  document.getElementById('sheetBackBtn').addEventListener('click', closePickupModal);
+  // Клик по тёмному фону — тоже закрывает (UX-стандарт для bottom-sheet).
+  pickupModal.querySelector('.backdrop').addEventListener('click', closePickupModal);
+  // Кнопка "Прибрати з замовлення" — пока заглушка.
+  pickupModal.querySelector('.sheet-primary-btn').addEventListener('click', () => {
+    console.log('remove from order');
   });
 
   // ===== Радио-выбор опций доставки =====
