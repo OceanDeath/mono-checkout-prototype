@@ -399,6 +399,12 @@
        магазину" (низ на 200) был отступ 20px до края карточки. */
     min-height: 220px;
   }
+  /* Подстейт C+: магазин выбран. К базовому pickup добавляется блок адреса
+     и иконки локации, кнопка превращается в "Змінити адресу", карточка
+     вытягивается до 260 (figma frame 6294:7116). */
+  .delivery-card.state-pickup.state-pickup-selected {
+    min-height: 260px;
+  }
 
   /* --- Город (верхний блок) --- */
   /* По Figma: иконка top=18, h=32. city-label на y=400 (top=16, h=16),
@@ -718,6 +724,46 @@
     line-height: 24px;
     letter-spacing: -0.0448px;
     color: #306eff;
+  }
+
+  /* === Подстейт state-pickup-selected ===
+     По figma frame 6294:7116, всё считается от карточки (top=384):
+       • адрес магазина top=196, h=40 (2 строки), Regular 14, w=263
+       • иконка локации top=226, 12×12 (на одной вертикали с merchant-name)
+       • "Змінити адресу" top=232, h=16 (Bold 14 синий) — та же позиция что и
+         ссылка в pickup, но текст и top чуть другие.
+     В моём коде .pickup-link уже стоит на top=176 (для стейта без выбора),
+     и в подстейте я не перепозиционирую её — наоборот, оставляю на 176
+     если она нужна там. Но по figma в подстейте кнопка стоит ниже —
+     на top=232 (под адресом).
+     Решение: pickup-link в подстейте сдвигается на top=232. */
+  .pickup-merchant .pickup-address {
+    display: none;     /* виден только при .state-pickup-selected */
+    position: absolute;
+    left: 64px;
+    top: 176px;
+    width: 263px;
+    height: 40px;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #000;
+  }
+  .delivery-card.state-pickup-selected .pickup-merchant .pickup-address {
+    display: flex;
+  }
+  /* Когда магазин выбран — pickup-link едет вниз, под адрес */
+  .delivery-card.state-pickup-selected .pickup-merchant .pickup-link {
+    top: 226px;     /* по figma иконка location top=226, текст top=232.
+                       Так как у нас flex-align-items:center, ставим контейнер
+                       на 226 чтобы иконка совпала с figma; текст займёт центр. */
+    height: 16px;
+  }
+  /* Текст ссылки в подстейте имеет line-height 16 (а не 24) — компактнее */
+  .delivery-card.state-pickup-selected .pickup-merchant .pickup-link span {
+    line-height: 16px;
   }
 
   /* Disabled-вариант кнопки "Продовжити" — серый градиент когда адрес ещё не выбран. */
@@ -1269,12 +1315,12 @@
           <img src="assets/Edit.svg" alt="">
           <span>Редагувати</span>
         </div>
-        <div class="qty">3 товари</div>
-        <div class="price">85 198 ₴</div>
+        <div class="qty" id="cartQty">3 товари</div>
+        <div class="price" id="cartPrice">85 198 ₴</div>
         <div class="products">
           <div class="product"><img src="assets/product_cart_1.png" alt=""></div>
           <div class="product"><img src="assets/product_cart_2.png" alt=""></div>
-          <div class="product"><img src="assets/product_cart_3.png" alt=""></div>
+          <div class="product" id="cartFoxtrotProduct"><img src="assets/product_cart_3.png" alt=""></div>
         </div>
       </div>
 
@@ -1356,9 +1402,14 @@
             <div class="product"><img src="assets/product_cart_1.png" alt=""></div>
             <div class="product"><img src="assets/product_cart_2.png" alt=""></div>
           </div>
+          <!-- Адрес выбранного магазина — виден только в .state-pickup-selected -->
+          <div class="pickup-address" id="pickupSelectedAddress">м. Одеса, вул. Пантелеймонівська 88/1а, (ТРЦ Fontan Sky)</div>
+          <!-- Ссылка: текст меняется в зависимости от подстейта.
+               state-pickup → "Оберіть адресу магазину"
+               state-pickup-selected → "Змінити адресу" -->
           <div class="pickup-link">
             <img src="assets/Location_edit.svg" alt="">
-            <span>Оберіть адресу магазину</span>
+            <span id="pickupLinkLabel">Оберіть адресу магазину</span>
           </div>
         </div>
 
@@ -1473,7 +1524,7 @@
       <!-- Скроллируемый список магазинов -->
       <div class="pickup-list">
 
-        <div class="store-item">
+        <div class="store-item" data-addr="м. Одеса, вул. Пантелеймонівська 88/1а, (ТРЦ Fontan Sky)">
           <div class="pin-square">
             <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M10 18s6-5.4 6-10a6 6 0 1 0-12 0c0 4.6 6 10 6 10Z" fill="#FA5255"/>
@@ -1491,7 +1542,7 @@
           </div>
         </div>
 
-        <div class="store-item">
+        <div class="store-item" data-addr="м. Одеса, вул. Небесної сотні 2, (ТРЦ City Center)">
           <div class="pin-square">
             <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M10 18s6-5.4 6-10a6 6 0 1 0-12 0c0 4.6 6 10 6 10Z" fill="#FA5255"/>
@@ -1509,7 +1560,7 @@
           </div>
         </div>
 
-        <div class="store-item">
+        <div class="store-item" data-addr="смт. Фонтанка, вул. Старомиколаївська, 101А (ТРЦ Riviera Shopping City)">
           <div class="pin-square">
             <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M10 18s6-5.4 6-10a6 6 0 1 0-12 0c0 4.6 6 10 6 10Z" fill="#FA5255"/>
@@ -1527,7 +1578,7 @@
           </div>
         </div>
 
-        <div class="store-item">
+        <div class="store-item" data-addr="с. Лиманка, ж/м Дружній, просп. Небесної Сотні (Полковника Гуляєва) 107/1, (ТРЦ Маяк А1)">
           <div class="pin-square">
             <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M10 18s6-5.4 6-10a6 6 0 1 0-12 0c0 4.6 6 10 6 10Z" fill="#FA5255"/>
@@ -1595,7 +1646,16 @@
         // Спецкейс: «Доставка» из стейта pickup → возврат к стейту A.
         if (btn.dataset.seg === 'delivery-shipping' && inPickup) {
           card.classList.remove('state-pickup');
+          card.classList.remove('state-pickup-selected');
           document.getElementById('continueBtn').classList.remove('disabled');
+          // Возвращаем мышь Фокстрот в кошик: 2 товари → 3 товари, +4999
+          document.getElementById('cartQty').textContent = '3 товари';
+          document.getElementById('cartPrice').textContent = '85 198 ₴';
+          const fox = document.getElementById('cartFoxtrotProduct');
+          if (fox) fox.style.display = '';
+          // Сбрасываем подпись кнопки выбора магазина
+          const lbl = document.getElementById('pickupLinkLabel');
+          if (lbl) lbl.textContent = 'Оберіть адресу магазину';
           // далее переключение active как обычно
         }
         seg.querySelectorAll('.seg').forEach(b => b.classList.remove('active'));
@@ -1621,6 +1681,8 @@
   // переключаем карточку доставки в стейт pickup (мерчант KTC, для которого
   // самовивіз доступен), активируем сегмент "Самовивіз", блокируем "Продовжити"
   // (адрес магазина ещё не выбран).
+  // Также обновляется кошик: 3 товари → 2 товари, цена -4999 (мышка Logitech),
+  // и из ряда миниатюр пропадает PNG мыши.
   pickupModal.querySelector('.sheet-primary-btn').addEventListener('click', () => {
     closePickupModal();
     const deliveryCard = document.getElementById('deliveryCard');
@@ -1633,6 +1695,11 @@
     segment.querySelector('[data-seg="delivery-pickup"]').classList.add('active');
     // Блокируем "Продовжити"
     document.getElementById('continueBtn').classList.add('disabled');
+    // Обновляем кошик: убираем товар Фокстрот (мышка)
+    document.getElementById('cartQty').textContent = '2 товари';
+    document.getElementById('cartPrice').textContent = '80 199 ₴';
+    const fox = document.getElementById('cartFoxtrotProduct');
+    if (fox) fox.style.display = 'none';
   });
 
   // ===== Радио-выбор опций доставки =====
@@ -1685,10 +1752,25 @@
   document.getElementById('pickupBackBtn').addEventListener('click', () => {
     showScreen('checkout');
   });
-  // Клик по карточке магазина — пока заглушка (выбор адреса будет позже).
+  // Клик по карточке магазина: запоминаем выбранный адрес, возвращаем на
+  // чекаут, добавляем подстейт state-pickup-selected (рисует адрес и меняет
+  // текст ссылки), активируем кнопку "Продовжити".
+  // Каждая карточка имеет data-addr с полным адресом и data-line2 для разметки
+  // на 2 строки. Если data-line2 нет — используется только data-addr.
   document.querySelectorAll('.store-item').forEach(item => {
     item.addEventListener('click', () => {
-      console.log('store selected');
+      const addrText = item.getAttribute('data-addr');
+      if (addrText) {
+        document.getElementById('pickupSelectedAddress').textContent = addrText;
+      }
+      // Подстейт + смена текста кнопки
+      const card = document.getElementById('deliveryCard');
+      card.classList.add('state-pickup-selected');
+      document.getElementById('pickupLinkLabel').textContent = 'Змінити адресу';
+      // Активируем "Продовжити" — адрес теперь выбран
+      document.getElementById('continueBtn').classList.remove('disabled');
+      // Возврат на чекаут
+      showScreen('checkout');
     });
   });
 </script>
