@@ -2231,8 +2231,10 @@
     flex-direction: column;
     gap: 16px;
   }
-  /* Карточка выбора способа оплаты */
-  .payment-card {
+  /* Карточка выбора способа оплаты в модалке (отдельный класс,
+     чтобы не конфликтовать с .payment-card в чекауте — там это карточка
+     "Оплата карткою mono" с сегментом "Частинами/Повністю") */
+  .pay-card-row {
     position: relative;
     height: 88px;
     background: #fff;
@@ -2240,14 +2242,14 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
     cursor: pointer;
   }
-  .payment-card .card-icon {
+  .pay-card-row .card-icon {
     position: absolute;
     left: 16px; top: 24px;
     width: 56px;
     height: 40px;
     display: block;
   }
-  .payment-card .card-name {
+  .pay-card-row .card-name {
     position: absolute;
     left: 88px; top: 24px;
     height: 24px;
@@ -2257,7 +2259,7 @@
     letter-spacing: -0.0512px;
     color: #000;
   }
-  .payment-card .card-balance {
+  .pay-card-row .card-balance {
     position: absolute;
     left: 88px; top: 48px;
     height: 16px;
@@ -2268,7 +2270,7 @@
     color: #808080;
   }
   /* Радио справа */
-  .payment-card .radio {
+  .pay-card-row .radio {
     position: absolute;
     right: 16px; top: 32px;
     width: 24px;
@@ -2278,12 +2280,12 @@
     background: #fff;
     transition: background 0.12s, border-color 0.12s;
   }
-  .payment-card.selected .radio {
+  .pay-card-row.selected .radio {
     background: #306eff;
     border-color: #306eff;
   }
   /* Внутренняя точка-галочка для selected */
-  .payment-card.selected .radio::after {
+  .pay-card-row.selected .radio::after {
     content: '';
     position: absolute;
     left: 50%; top: 50%;
@@ -2740,14 +2742,14 @@
         </div>
         <div class="cards-list">
           <!-- Чорна картка — выбрана по дефолту (mono mastercard mini-card) -->
-          <div class="payment-card selected" data-card="black">
+          <div class="pay-card-row selected" data-card="black">
             <img class="card-icon" src="assets/black_card_mc_small.svg" alt="">
             <div class="card-name">Чорна картка</div>
             <div class="card-balance">50 450.25 ₴</div>
             <div class="radio"></div>
           </div>
           <!-- Біла картка — не выбрана (visa) -->
-          <div class="payment-card" data-card="white">
+          <div class="pay-card-row" data-card="white">
             <img class="card-icon" src="assets/white_card_visa_small.svg" alt="">
             <div class="card-name">Біла картка</div>
             <div class="card-balance">29 191.87 ₴</div>
@@ -3140,10 +3142,10 @@
   paymentModal.querySelector('.drag-handle').addEventListener('click', closePaymentModal);
   document.getElementById('paymentCollapseBtn').addEventListener('click', closePaymentModal);
 
-  // Выбор карты — переключение .selected между .payment-card
-  paymentModal.querySelectorAll('.payment-card').forEach(card => {
+  // Выбор карты — переключение .selected между .pay-card-row
+  paymentModal.querySelectorAll('.pay-card-row').forEach(card => {
     card.addEventListener('click', () => {
-      paymentModal.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected'));
+      paymentModal.querySelectorAll('.pay-card-row').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
     });
   });
