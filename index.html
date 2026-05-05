@@ -2555,6 +2555,305 @@
     z-index: 31;
   }
 
+  /* ======================================================================
+     Экран «Деталі замовлення» (figma 6343:8230)
+     - Светло-серый фон (#f4f4f4)
+     - Белый хедер 136px со статусбаром, back-кнопкой, заголовком и датой
+     - Скроллящийся список из 4 карточек: статус+товары / получение /
+       оплата / действия
+     ====================================================================== */
+  .details-screen {
+    background: #f4f4f4;
+  }
+
+  /* Хедер: статичный белый блок 136px (как в pickup/np-screen) */
+  .details-header {
+    position: absolute;
+    left: 0; top: 0;
+    width: 375px;
+    height: 136px;
+    background: #f4f4f4;          /* такой же как фон, без выделения */
+    z-index: 30;
+  }
+  .details-header .back-btn {
+    position: absolute;
+    left: 16px; top: 56px;
+    width: 24px; height: 24px;
+    cursor: pointer;
+  }
+  .details-header .back-btn img {
+    width: 24px; height: 24px;
+    display: block;
+  }
+  .details-header .details-title {
+    position: absolute;
+    left: 16px; top: 88px;
+    height: 32px;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: -0.36px;
+    color: #000;
+  }
+  .details-header .details-date {
+    position: absolute;
+    left: 16px; top: 120px;
+    height: 24px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.154px;
+    color: #808080;
+  }
+
+  /* Статусбар на details: чёрные иконки на белом (как в pickup/np) */
+  .details-screen .status-bar {
+    position: absolute;
+    left: 0; top: 0;
+    width: 375px; height: 44px;
+    z-index: 31;
+    color: #000;
+  }
+  .details-screen .status-bar .time {
+    position: absolute;
+    left: 21px; top: 16px;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 20px;
+    letter-spacing: -0.3px;
+    color: #000;
+  }
+  .details-screen .status-bar .icons {
+    position: absolute;
+    right: 14px; top: 17px;
+    height: 12px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .details-screen .status-bar .icons img {
+    height: 12px;
+    display: block;
+    filter: invert(1);   /* белые SVG → чёрные на белом фоне */
+  }
+
+  /* Скроллящийся контейнер под хедером */
+  .details-list {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    z-index: 10;
+    padding: 152px 0 40px 0;     /* 136 хедер + 16 воздуха */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Общий стиль карточек на details */
+  .details-list .details-card {
+    position: relative;
+    margin: 0 16px;
+    background: #fff;
+    border-radius: 16px;
+  }
+
+  /* === Карточка 1: Статус + товары === */
+  .details-status-card {
+    /* высота динамическая — определяется по содержимому */
+  }
+  .details-status-card .status-icon {
+    position: absolute;
+    left: 16px; top: 20px;
+    width: 32px; height: 32px;
+  }
+  .details-status-card .status-icon img { width: 32px; height: 32px; display: block; }
+  .details-status-card .status-name {
+    position: absolute;
+    left: 64px; top: 18px;
+    height: 20px;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 20px;
+    color: #000;
+  }
+  .details-status-card .status-eta {
+    position: absolute;
+    left: 64px; top: 40px;
+    height: 16px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #808080;
+  }
+  .details-status-card .status-chevron {
+    position: absolute;
+    right: 16px; top: 24px;
+    width: 24px; height: 24px;
+  }
+  .details-status-card .status-chevron::before {
+    content: '';
+    position: absolute;
+    left: 9px; top: 6px;
+    width: 8px; height: 12px;
+    border-right: 1.6px solid #c4c4c4;
+    border-top: 1.6px solid #c4c4c4;
+    transform: rotate(45deg);
+    transform-origin: center;
+    /* chevron-right через бордеры — без SVG */
+  }
+  /* Товар в карточке статуса */
+  .details-status-card .item-row {
+    position: relative;
+    margin: 0 16px;
+    padding: 16px 0;
+    height: 96px;
+  }
+  .details-status-card .item-row + .item-row {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .details-status-card .item-row:first-of-type {
+    margin-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    padding-top: 16px;
+  }
+  .details-status-card .item-row .item-thumb {
+    position: absolute;
+    right: 0; top: 16px;
+    width: 64px; height: 64px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .details-status-card .item-row .item-thumb img {
+    width: 64px; height: 64px;
+    object-fit: contain;
+    display: block;
+  }
+  .details-status-card .item-row .item-name {
+    position: absolute;
+    left: 0; top: 16px;
+    width: 211px;
+    height: 40px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #000;
+    /* обрезаем 2 строки */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .details-status-card .item-row .item-price {
+    position: absolute;
+    left: 0; top: 60px;
+    height: 24px;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.0576px;
+    color: #000;
+  }
+
+  /* === Универсальная "info-row" для остальных карточек:
+     серый caption сверху, чёрный value снизу. Использует поток c gap. === */
+  .details-info-row {
+    position: relative;
+    padding: 16px 16px;
+  }
+  .details-info-row + .details-info-row {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .details-info-row .caption {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #808080;
+  }
+  .details-info-row .value {
+    margin-top: 4px;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: #000;
+  }
+  /* Иконка справа в info-row (для продавца, оплаты) */
+  .details-info-row .row-trail {
+    position: absolute;
+    right: 16px; top: 50%;
+    transform: translateY(-50%);
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .details-info-row .row-trail img {
+    max-width: 32px;
+    max-height: 32px;
+    display: block;
+  }
+  .details-info-row .row-trail.size-24 { width: 24px; height: 24px; }
+  .details-info-row .row-trail.size-24 img { max-width: 24px; max-height: 24px; }
+
+  /* === Карточка действий внизу === */
+  .details-actions-card .action-row {
+    position: relative;
+    padding: 16px 16px 16px 56px;
+    cursor: pointer;
+    min-height: 56px;
+    display: flex; align-items: center;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: #000;
+  }
+  .details-actions-card .action-row + .action-row {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .details-actions-card .action-row .action-icon {
+    position: absolute;
+    left: 16px; top: 50%;
+    transform: translateY(-50%);
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* Иконка "Скасувати замовлення" — синий круг с белым ✕ */
+  .action-icon.cancel-icon {
+    background: #306eff;
+    border-radius: 50%;
+    color: #fff;
+  }
+  .action-icon.cancel-icon::before {
+    content: '✕';
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  /* Иконка "Поставити запитання" — синий круг с message */
+  .action-icon.chat-icon {
+    background: #306eff;
+    border-radius: 50%;
+    color: #fff;
+  }
+  .action-icon.chat-icon::before {
+    content: '';
+    width: 12px; height: 10px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'><path d='M2 1h8a1 1 0 011 1v5a1 1 0 01-1 1H6L3 9.5V8H2a1 1 0 01-1-1V2a1 1 0 011-1z' fill='white' stroke='white' stroke-width='0.6' stroke-linejoin='round'/></svg>") center/contain no-repeat;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'><path d='M2 1h8a1 1 0 011 1v5a1 1 0 01-1 1H6L3 9.5V8H2a1 1 0 01-1-1V2a1 1 0 011-1z' fill='white' stroke='white' stroke-width='0.6' stroke-linejoin='round'/></svg>") center/contain no-repeat;
+  }
+
+  /* Home indicator на details */
+  .details-screen .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: #000;
+    border-radius: 100px;
+    z-index: 31;
+  }
+
 </style>
 </head>
 <body>
@@ -3252,6 +3551,109 @@
 
     </div><!-- /.success-screen -->
 
+    <!-- ====== Экран «Деталі замовлення» (figma 6343:8230) ====== -->
+    <div class="screen details-screen" id="detailsScreen">
+
+      <!-- Хедер: статусбар + back + заголовок + дата -->
+      <div class="details-header">
+        <div class="status-bar">
+          <div class="time">19:12</div>
+          <div class="icons">
+            <img src="assets/cellular.svg" alt="" width="17" height="11">
+            <img src="assets/wifi.svg" alt="" width="16" height="11">
+            <img src="assets/battery.svg" alt="" width="25" height="12">
+          </div>
+        </div>
+        <div class="back-btn" id="detailsBackBtn">
+          <img src="assets/back_icon_blue.svg" alt="back">
+        </div>
+        <div class="details-title">Деталі замовлення</div>
+        <div class="details-date">26 травня, 16:22</div>
+      </div>
+
+      <!-- Скроллящийся список карточек -->
+      <div class="details-list">
+
+        <!-- Карточка 1: Статус "Готується до видачі" + товары -->
+        <div class="details-card details-status-card">
+          <!-- Кликабельная зона со статусом -->
+          <div style="position: relative; height: 72px;">
+            <div class="status-icon">
+              <img src="assets/Status_waiting.svg" alt="">
+            </div>
+            <div class="status-name">Готується до видачі</div>
+            <div class="status-eta">Сьогодні після 17:00</div>
+            <div class="status-chevron"></div>
+          </div>
+          <!-- Список товаров (для самовывоза = 2 штуки: ноут + PS5) -->
+          <div class="item-row">
+            <div class="item-thumb"><img src="assets/product_cart_2.png" alt=""></div>
+            <div class="item-name">Ноутбук Asus TUF Gaming F15 FX507ZC4-HN083 Mecha Gray</div>
+            <div class="item-price">31 199 ₴</div>
+          </div>
+          <div class="item-row">
+            <div class="item-thumb"><img src="assets/product_cart_1.png" alt=""></div>
+            <div class="item-name">Ігрова приставка Sony PlayStation 5 Slim Digital Edition</div>
+            <div class="item-price">22 999 ₴</div>
+          </div>
+        </div>
+
+        <!-- Карточка 2: продавець, адреса, час, отримувач, телефон -->
+        <div class="details-card">
+          <div class="details-info-row">
+            <div class="caption">Продавець</div>
+            <div class="value">КТС</div>
+            <div class="row-trail">
+              <img src="assets/KTC_logo.png" alt="" style="border-radius:50%;width:32px;height:32px;">
+            </div>
+          </div>
+          <div class="details-info-row">
+            <div class="caption">Самовивіз з магазину</div>
+            <div class="value">вул. Пантелеймонівська 88/1а,<br>(ТРЦ Fontan Sky)</div>
+          </div>
+          <div class="details-info-row">
+            <div class="caption">з 10:00 до 21:00</div>
+          </div>
+          <div class="details-info-row">
+            <div class="caption">Одержувач</div>
+            <div class="value">Новіков Микола</div>
+          </div>
+          <div class="details-info-row">
+            <div class="caption">Телефон одержувача</div>
+            <div class="value">+380 (95) 123 45 67</div>
+          </div>
+        </div>
+
+        <!-- Карточка 3: способ оплаты -->
+        <div class="details-card">
+          <div class="details-info-row">
+            <div class="caption">Повна оплата</div>
+            <div class="value">З чорної картки</div>
+            <div class="row-trail size-24">
+              <img src="assets/black_card_mc_small.svg" alt="" style="width:24px;height:auto;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Карточка 4: действия (отмена, вопрос) -->
+        <div class="details-card details-actions-card">
+          <div class="action-row" id="cancelOrderRow">
+            <div class="action-icon cancel-icon"></div>
+            <span>Скасувати замовлення</span>
+          </div>
+          <div class="action-row" id="askQuestionRow">
+            <div class="action-icon chat-icon"></div>
+            <span>Поставити запитання</span>
+          </div>
+        </div>
+
+      </div><!-- /.details-list -->
+
+      <!-- Home indicator -->
+      <div class="home-indicator"></div>
+
+    </div><!-- /.details-screen -->
+
     </div><!-- /.phone -->
   </div><!-- /.device -->
 
@@ -3436,9 +3838,21 @@
   document.getElementById('goHomeBtn').addEventListener('click', () => {
     showScreen('cart');
   });
-  // "Переглянути замовлення" — пока заглушка (в будущем экран деталей заказа).
+  // "Переглянути замовлення" → переход на экран деталей заказа
   document.getElementById('viewOrderBtn').addEventListener('click', () => {
-    console.log('view order clicked');
+    showScreen('details');
+  });
+  // Back с экрана деталей → возврат на success (или можно cart, но success
+  // логичнее — пользователь только что оформил заказ)
+  document.getElementById('detailsBackBtn').addEventListener('click', () => {
+    showScreen('success');
+  });
+  // Заглушки для кнопок действий внизу details
+  document.getElementById('cancelOrderRow').addEventListener('click', () => {
+    console.log('cancel order clicked');
+  });
+  document.getElementById('askQuestionRow').addEventListener('click', () => {
+    console.log('ask question clicked');
   });
 
   // ===== Конфети на экране успеха =====
@@ -3555,19 +3969,21 @@
   const pickupScreen   = document.getElementById('pickupScreen');
   const npScreen       = document.getElementById('npScreen');
   const successScreen  = document.getElementById('successScreen');
+  const detailsScreen  = document.getElementById('detailsScreen');
   function showScreen(name) {
     cartScreen.classList.toggle('active',     name === 'cart');
     checkoutScreen.classList.toggle('active', name === 'checkout');
     pickupScreen.classList.toggle('active',   name === 'pickup');
     npScreen.classList.toggle('active',       name === 'np');
     successScreen.classList.toggle('active',  name === 'success');
+    detailsScreen.classList.toggle('active',  name === 'details');
     // На каждом переключении ресетим скролл наверх — иначе при возврате
     // пользователь видит середину экрана. У разных экранов разные
     // скролл-контейнеры (.scroll-area для cart/checkout, .np-list для np,
-    // pickup-screen имеет свой внутренний скролл).
+    // .details-list для details, pickup-screen имеет свой внутренний скролл).
     const active = document.querySelector('.screen.active');
     if (active) {
-      const scrollEl = active.querySelector('.scroll-area, .np-list, .pickup-list');
+      const scrollEl = active.querySelector('.scroll-area, .np-list, .pickup-list, .details-list');
       if (scrollEl) scrollEl.scrollTop = 0;
     }
   }
