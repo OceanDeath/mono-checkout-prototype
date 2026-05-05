@@ -2352,6 +2352,211 @@
     border-radius: 100px;
   }
 
+  /* ======================================================================
+     Экран «Успіх» (figma 6339:8094)
+     - Фиолетовый градиент-фон (от #4760E7 до #8469D5)
+     - Иллюстрация мономяу с ноутбуком + speech-bubble (один SVG-файл)
+     - Подзаголовок белый opacity 70
+     - Карточка заказа (белая, тень, кнопка "Переглянути замовлення")
+     - Чёрная кнопка "Повернутися на головну" внизу
+     ====================================================================== */
+  .success-screen {
+    background: linear-gradient(180deg, #4760e7 0%, #8469d5 100%);
+  }
+  /* Конфети — canvas на весь экран, поверх всего, прозрачный. Не ловит
+     клики (pointer-events: none), чтобы кнопки оставались тапабельными. */
+  .success-screen .confetti-canvas {
+    position: absolute;
+    inset: 0;
+    width: 375px;
+    height: 812px;
+    z-index: 50;
+    pointer-events: none;
+  }
+  /* Статусбар на фиолетовом — белые иконки и время (как в чекауте) */
+  .success-screen .status-bar {
+    position: absolute;
+    left: 0; top: 0;
+    width: 375px; height: 44px;
+    z-index: 31;
+    color: #fff;
+  }
+  .success-screen .status-bar .time {
+    position: absolute;
+    left: 21px; top: 16px;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 20px;
+    letter-spacing: -0.3px;
+    color: #fff;
+  }
+  .success-screen .status-bar .icons {
+    position: absolute;
+    right: 14px; top: 17px;
+    height: 12px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .success-screen .status-bar .icons img {
+    height: 12px;
+    display: block;
+    /* Иконки белые по дефолту — фильтр не нужен */
+  }
+
+  /* Иллюстрация мономяу — единый SVG 331×268 с котиком и speech-bubble.
+     По Figma расположена в верхней половине экрана, центр на y≈250. */
+  .success-screen .success-cat {
+    position: absolute;
+    left: 50%;
+    top: 88px;
+    transform: translateX(-50%);
+    width: 331px;
+    height: 268px;
+  }
+  .success-screen .success-cat img {
+    width: 331px;
+    height: 268px;
+    display: block;
+  }
+
+  /* Подзаголовок под иллюстрацией */
+  .success-screen .success-subtitle {
+    position: absolute;
+    left: 50%;
+    top: 404px;
+    transform: translateX(-50%);
+    width: 308px;
+    text-align: center;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: -0.024px;
+    color: #fff;
+    opacity: 0.7;
+  }
+
+  /* Карточка заказа: белая, скругление 16, тень */
+  .success-screen .order-card {
+    position: absolute;
+    left: 24px;
+    top: 476px;
+    width: 327px;
+    height: 140px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+  /* "N товари" — серый/чёрный текст 14/400, левый верх */
+  .success-screen .order-card .order-count {
+    position: absolute;
+    left: 16px;
+    top: 20px;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    color: #000;
+  }
+  /* Сумма — Bold 20, под счётчиком */
+  .success-screen .order-card .order-total {
+    position: absolute;
+    left: 16px;
+    top: 44px;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: -0.064px;
+    color: #000;
+  }
+  /* Миниатюры товаров справа — 3 квадрата 48×48, налезают на 16px */
+  .success-screen .order-card .order-thumbs {
+    position: absolute;
+    right: 16px;
+    top: 20px;
+    height: 48px;
+    display: flex;
+    flex-direction: row;
+  }
+  .success-screen .order-card .order-thumbs .thumb {
+    width: 48px;
+    height: 48px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: -2px 0 6px rgba(0, 0, 0, 0.06);
+    margin-left: -8px;            /* чтобы товары налезали один на другой */
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .success-screen .order-card .order-thumbs .thumb:first-child {
+    margin-left: 0;
+    box-shadow: none;
+  }
+  .success-screen .order-card .order-thumbs .thumb img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* Капсула-кнопка "Переглянути замовлення" — синяя 11% прозрачная,
+     текст синий 14/700 */
+  .success-screen .order-card .view-order-btn {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    height: 40px;
+    background: rgba(48, 110, 255, 0.11);
+    border: 0;
+    border-radius: 12px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: -0.0448px;
+    color: #306eff;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .success-screen .order-card .view-order-btn:active {
+    background: rgba(48, 110, 255, 0.18);
+  }
+
+  /* Чёрная кнопка "Повернутися на головну" внизу */
+  .success-screen .home-btn {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 48px;
+    height: 56px;
+    background: #000;
+    border: 0;
+    border-radius: 16px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.0512px;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.08s ease, opacity 0.15s ease;
+  }
+  .success-screen .home-btn:active { transform: scale(0.985); opacity: 0.92; }
+
+  /* Home indicator на success — белый на фиолетовом был бы плохо виден,
+     по Figma он чёрный (см. node 6339:8096) */
+  .success-screen .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: #000;
+    border-radius: 100px;
+    z-index: 31;
+  }
+
 </style>
 </head>
 <body>
@@ -2999,6 +3204,53 @@
 
     </div><!-- /.np-screen -->
 
+    <!-- ====== Экран «Успіх» (figma 6339:8094) ====== -->
+    <div class="screen success-screen" id="successScreen">
+
+      <!-- Конфети-canvas: накладывается поверх всего, не блокирует клики.
+           Запускается из JS при активации экрана. -->
+      <canvas class="confetti-canvas" id="confettiCanvas" width="375" height="812"></canvas>
+
+      <!-- Статусбар: время + сетевые иконки (белые на фиолетовом) -->
+      <div class="status-bar">
+        <div class="time">19:12</div>
+        <div class="icons">
+          <img src="assets/cellular.svg" alt="" width="17" height="11">
+          <img src="assets/wifi.svg" alt="" width="16" height="11">
+          <img src="assets/battery.svg" alt="" width="25" height="12">
+        </div>
+      </div>
+
+      <!-- Иллюстрация: мономяу с ноутбуком + speech-bubble -->
+      <div class="success-cat">
+        <img src="assets/cat_success.svg" alt="">
+      </div>
+
+      <!-- Подзаголовок -->
+      <div class="success-subtitle">
+        Очікуйте повідомлення про готовність вашого замовлення
+      </div>
+
+      <!-- Карточка: счётчик товаров, сумма, миниатюры, кнопка "Переглянути" -->
+      <div class="order-card">
+        <div class="order-count">3 товари</div>
+        <div class="order-total">58 197 ₴</div>
+        <div class="order-thumbs">
+          <div class="thumb"><img src="assets/product_cart_1.png" alt=""></div>
+          <div class="thumb"><img src="assets/product_cart_2.png" alt=""></div>
+          <div class="thumb"><img src="assets/product_cart_3.png" alt=""></div>
+        </div>
+        <button class="view-order-btn" id="viewOrderBtn">Переглянути замовлення</button>
+      </div>
+
+      <!-- Чёрная кнопка возврата на главную -->
+      <button class="home-btn" id="goHomeBtn">Повернутися на головну</button>
+
+      <!-- Home indicator -->
+      <div class="home-indicator"></div>
+
+    </div><!-- /.success-screen -->
+
     </div><!-- /.phone -->
   </div><!-- /.device -->
 
@@ -3150,11 +3402,112 @@
     });
   });
 
-  // "Сплатити повністю" — заглушка под финальный экран
+  // "Сплатити повністю" → закрываем модалку, показываем экран успеха.
+  // Небольшая задержка чтобы visual transition модалки успел отыграть.
   document.getElementById('payFullBtn').addEventListener('click', () => {
-    console.log('pay full clicked');
     closePaymentModal();
+    setTimeout(() => {
+      showScreen('success');
+      runConfetti();
+    }, 200);
   });
+
+  // ===== Кнопки на экране успеха =====
+  // "Повернутися на головну" — на этом прототипе нет настоящего "главного"
+  // экрана, поэтому возвращаем в начало флоу (корзина).
+  document.getElementById('goHomeBtn').addEventListener('click', () => {
+    showScreen('cart');
+  });
+  // "Переглянути замовлення" — пока заглушка (в будущем экран деталей заказа).
+  document.getElementById('viewOrderBtn').addEventListener('click', () => {
+    console.log('view order clicked');
+  });
+
+  // ===== Конфети на экране успеха =====
+  // Эффект: ~120 цветных частиц вылетают из верхних углов и центра, падают
+  // вниз с гравитацией, вращаются, постепенно затухают. На канвасе 375×812.
+  // Анимация ~3.5 сек, потом частицы исчезают. Можно вызвать повторно.
+  const confettiCanvas = document.getElementById('confettiCanvas');
+  const confettiCtx = confettiCanvas.getContext('2d');
+  let confettiRAF = null;
+
+  function runConfetti() {
+    // Если уже идёт — отменяем предыдущий цикл, чтобы перезапустить
+    if (confettiRAF) cancelAnimationFrame(confettiRAF);
+
+    const W = 375, H = 812;
+    // Палитра под фиолетовый фон — яркие, но гармонирующие цвета
+    const colors = ['#ffd166', '#ef476f', '#06d6a0', '#ffa3c7', '#ffffff', '#ffe066', '#a6e1fa', '#ffb4a2'];
+    const particles = [];
+
+    // Создаём частицы 3-мя "залпами" из трёх точек: лево, центр, право
+    const sources = [
+      { x: 60,  y: 0,   spreadX: [-2, 4] },     // левый верх
+      { x: 187, y: 0,   spreadX: [-3, 3] },     // центр
+      { x: 315, y: 0,   spreadX: [-4, 2] },     // правый верх
+    ];
+    sources.forEach(src => {
+      for (let i = 0; i < 40; i++) {
+        particles.push({
+          x: src.x + (Math.random() - 0.5) * 30,
+          y: src.y + Math.random() * 20,
+          vx: src.spreadX[0] + Math.random() * (src.spreadX[1] - src.spreadX[0]),
+          vy: 2 + Math.random() * 4,                          // начальная скорость вниз
+          size: 6 + Math.random() * 6,                        // 6-12 px
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.3,
+          shape: Math.random() < 0.5 ? 'rect' : 'circle',
+          life: 1.0,                                          // 1.0 → 0.0
+          lifeDecay: 0.003 + Math.random() * 0.004,           // ~3-7 сек жизни
+        });
+      }
+    });
+
+    function tick() {
+      confettiCtx.clearRect(0, 0, W, H);
+      let alive = false;
+
+      particles.forEach(p => {
+        if (p.life <= 0) return;
+        alive = true;
+
+        // Физика: гравитация + воздушное сопротивление + покачивание
+        p.vy += 0.12;                       // gravity
+        p.vx *= 0.99;                       // air drag
+        p.x += p.vx + Math.sin(p.y * 0.05) * 0.4;  // лёгкое покачивание влево-вправо
+        p.y += p.vy;
+        p.rotation += p.rotSpeed;
+        p.life -= p.lifeDecay;
+
+        // Удаляем если ушло за границы
+        if (p.y > H + 20) p.life = 0;
+
+        // Рисуем
+        confettiCtx.save();
+        confettiCtx.globalAlpha = Math.max(0, Math.min(1, p.life));
+        confettiCtx.translate(p.x, p.y);
+        confettiCtx.rotate(p.rotation);
+        confettiCtx.fillStyle = p.color;
+        if (p.shape === 'rect') {
+          confettiCtx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+        } else {
+          confettiCtx.beginPath();
+          confettiCtx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+          confettiCtx.fill();
+        }
+        confettiCtx.restore();
+      });
+
+      if (alive) {
+        confettiRAF = requestAnimationFrame(tick);
+      } else {
+        confettiCtx.clearRect(0, 0, W, H);
+        confettiRAF = null;
+      }
+    }
+    tick();
+  }
 
   // ===== Back в чекауте → возврат в корзину =====
   document.querySelector('.checkout-screen .back-btn').addEventListener('click', () => {
@@ -3183,11 +3536,13 @@
   const checkoutScreen = document.getElementById('checkoutScreen');
   const pickupScreen   = document.getElementById('pickupScreen');
   const npScreen       = document.getElementById('npScreen');
+  const successScreen  = document.getElementById('successScreen');
   function showScreen(name) {
     cartScreen.classList.toggle('active',     name === 'cart');
     checkoutScreen.classList.toggle('active', name === 'checkout');
     pickupScreen.classList.toggle('active',   name === 'pickup');
     npScreen.classList.toggle('active',       name === 'np');
+    successScreen.classList.toggle('active',  name === 'success');
     // На каждом переключении ресетим скролл наверх — иначе при возврате
     // пользователь видит середину экрана. У разных экранов разные
     // скролл-контейнеры (.scroll-area для cart/checkout, .np-list для np,
