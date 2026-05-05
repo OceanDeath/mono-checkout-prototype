@@ -2445,21 +2445,23 @@
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
-  /* "N товари" — серый/чёрный текст 14/400, левый верх */
+  /* "N товари" — серый/чёрный текст 14/400, левый верх.
+     По Figma top=20 (y=496 от y=476 у карточки) */
   .success-screen .order-card .order-count {
     position: absolute;
     left: 16px;
-    top: 28px;
+    top: 20px;
     font-weight: 400;
     font-size: 14px;
     line-height: 16px;
     color: #000;
   }
-  /* Сумма — Bold 20, под счётчиком */
+  /* Сумма — Bold 20, под счётчиком.
+     По Figma top=36 (y=512 от y=476 у карточки) */
   .success-screen .order-card .order-total {
     position: absolute;
     left: 16px;
-    top: 52px;
+    top: 36px;
     font-weight: 700;
     font-size: 20px;
     line-height: 24px;
@@ -2467,11 +2469,11 @@
     color: #000;
   }
   /* Миниатюры товаров справа — квадраты 48×48 в ряд с зазором 8px,
-     без теней (просто белые карточки на белом — не нужны). */
+     без теней. По Figma top=20 (y=496 от y=476 у карточки). */
   .success-screen .order-card .order-thumbs {
     position: absolute;
     right: 16px;
-    top: 28px;
+    top: 20px;
     height: 48px;
     display: flex;
     flex-direction: row;
