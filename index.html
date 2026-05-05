@@ -2352,6 +2352,56 @@
     border-radius: 100px;
   }
 
+  /* ======================================================================
+     МОБИЛЬНАЯ ВЕРСИЯ
+     На узких экранах (≤480px — это все смартфоны) убираем рамку iPhone и
+     растягиваем содержимое 375×812 на весь viewport.
+
+     Подход: transform: scale() — самый дешёвый способ адаптации, не нужно
+     переделывать всю вёрстку с захардкоженными left/top/width в пикселях.
+     calc(100vw / 375) даёт коэффициент. transform-origin: top left якорит
+     содержимое в верхнем углу, чтобы скейл не съезжал.
+     ====================================================================== */
+  @media (max-width: 480px) {
+    /* body теряет тёмный фон и центрирование */
+    html, body {
+      width: 100%;
+      overflow: hidden;
+    }
+    body {
+      background: #f4f4f4;
+      padding: 0;
+      display: block;
+      min-height: 100vh;
+    }
+
+    /* device — теряет рамку, тени, padding. Становится прозрачным
+       wrapper'ом, который пропорционально масштабирует phone под viewport */
+    .device {
+      width: 100vw;
+      height: calc(100vw * 812 / 375);   /* высота пропорционально ширине */
+      max-height: 100vh;
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+      overflow: hidden;
+    }
+    /* убираем dynamic island и физические кнопки */
+    .device::before,
+    .device-btn { display: none; }
+
+    /* phone — оригинальные 375×812, но скейлим под viewport.
+       transform-origin top left — без него scale съедет относительно центра. */
+    .phone {
+      width: 375px;
+      height: 812px;
+      border-radius: 0;
+      transform-origin: top left;
+      transform: scale(calc(100vw / 375));
+    }
+  }
+
 </style>
 </head>
 <body>
