@@ -1915,6 +1915,243 @@
     z-index: 31;
   }
 
+  /* ======================================================================
+     Экран «Доставка Нова пошта»  (figma frame 6334:7629)
+     - Белый фон, чёрные тексты
+     - Хедер 136px: статусбар + back + заголовок 24/700 + лого НП справа
+     - Поле поиска "Адреса або номер відділення" 343×48 на y=136
+     - Список с двумя секциями "Останні" / "Доступні" — скроллится
+     - Каждая карточка: серый квадрат 40×40 с иконкой слева, название (16/600),
+       вес справа (12/500 серый), адрес (14/400 серый), тонкий разделитель снизу
+     ====================================================================== */
+  .np-screen {
+    background: #fff;
+  }
+
+  /* Хедер: статичный белый блок 136px, прибит к верху */
+  .np-header {
+    position: absolute;
+    left: 0; top: 0;
+    width: 375px;
+    height: 136px;
+    background: #fff;
+    z-index: 30;
+  }
+  .np-header .back-btn {
+    position: absolute;
+    left: 16px; top: 56px;
+    width: 24px; height: 24px;
+    cursor: pointer;
+  }
+  .np-header .back-btn img {
+    width: 24px; height: 24px;
+    display: block;
+  }
+  /* Заголовок + лого НП во flex-row: лого прижимается прямо к концу
+     текста с зазором, как в pickup-screen "Самовивіз з магазину". */
+  .np-header .np-title-row {
+    position: absolute;
+    left: 16px; top: 88px;
+    right: 16px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .np-header .np-title-row .np-title {
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: -0.36px;
+    color: #000;
+  }
+  .np-header .np-title-row .np-logo {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .np-header .np-title-row .np-logo img {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+
+  /* Статусбар внутри np-screen — повторяем паттерн pickup-screen,
+     инвертируем белые SVG-иконки в чёрные на белом фоне */
+  .np-screen .status-bar {
+    position: absolute;
+    left: 0; top: 0;
+    width: 375px; height: 44px;
+    z-index: 31;
+    color: #000;
+  }
+  .np-screen .status-bar .time {
+    position: absolute;
+    left: 21px; top: 16px;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 20px;
+    letter-spacing: -0.3px;
+    color: #000;
+  }
+  .np-screen .status-bar .icons {
+    position: absolute;
+    right: 14px; top: 17px;
+    height: 12px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .np-screen .status-bar .icons img {
+    height: 12px;
+    display: block;
+    filter: invert(1);
+  }
+
+  /* Поле поиска — серая капсула с лупой и плейсхолдером */
+  .np-search {
+    position: absolute;
+    left: 16px; top: 136px;
+    width: 343px;
+    height: 48px;
+    background: #f3f3f3;
+    border-radius: 12px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 12px;
+  }
+  .np-search .search-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .np-search .search-icon svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+  .np-search .placeholder {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #808080;
+    opacity: 0.8;
+  }
+
+  /* Скроллируемый список — start ниже поиска (y=200), под него
+     уходит весь скролл-контент. Padding-top 200, padding-bottom 40
+     для воздуха в конце. */
+  .np-list {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    z-index: 10;
+    padding: 200px 0 40px 0;
+  }
+
+  /* Заголовок секции (Останні / Доступні) — Semibold 14, чёрный с opacity 50% */
+  .np-section-label {
+    margin: 16px 16px 0 16px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: #1b1b1b;
+    opacity: 0.5;
+  }
+  /* Первая секция без верхнего отступа (она первая в списке) */
+  .np-list > .np-section-label:first-child {
+    margin-top: 12px;
+  }
+
+  /* Карточка отделения */
+  .np-item {
+    position: relative;
+    margin: 16px 16px 0 16px;
+    padding-bottom: 16px;
+    cursor: pointer;
+    min-height: 56px;
+  }
+  /* Серый квадрат 40×40 с иконкой слева */
+  .np-item .icon-square {
+    position: absolute;
+    left: 0; top: 0;
+    width: 40px;
+    height: 40px;
+    background: #f3f3f3;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .np-item .icon-square img {
+    width: 28px;
+    height: 28px;
+    display: block;
+    object-fit: contain;
+  }
+  .np-item .icon-square svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+  }
+  /* Тело карточки (название, адрес) — справа от иконки */
+  .np-item .body {
+    margin-left: 56px;
+    padding-right: 80px;   /* запас под "до X кг" */
+  }
+  .np-item .name {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: #000;
+    margin: 0;
+  }
+  .np-item .addr {
+    margin: 0;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #808080;
+  }
+  /* Вес "до X кг" справа на одной линии с названием */
+  .np-item .weight {
+    position: absolute;
+    right: 0; top: 0;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    color: #808080;
+  }
+  /* Тонкий разделитель снизу — кроме последнего пункта */
+  .np-item::after {
+    content: '';
+    position: absolute;
+    left: 56px;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.06);
+  }
+  .np-item:last-child::after { display: none; }
+
+  /* Home indicator на np-screen */
+  .np-screen .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: #000;
+    border-radius: 100px;
+    z-index: 31;
+  }
+
 </style>
 </head>
 <body>
@@ -2411,6 +2648,131 @@
 
     </div><!-- /.pickup-screen -->
 
+    <!-- ====== Экран «Доставка Нова пошта» (figma 6334:7629) ====== -->
+    <div class="screen np-screen" id="npScreen">
+
+      <!-- Хедер: статусбар + back + заголовок + лого НП -->
+      <div class="np-header">
+        <div class="status-bar">
+          <div class="time">19:12</div>
+          <div class="icons">
+            <img src="assets/cellular.svg" alt="" width="17" height="11">
+            <img src="assets/wifi.svg" alt="" width="16" height="11">
+            <img src="assets/battery.svg" alt="" width="25" height="12">
+          </div>
+        </div>
+        <div class="back-btn" id="npBackBtn">
+          <img src="assets/back_icon_blue.svg" alt="back">
+        </div>
+        <div class="np-title-row">
+          <span class="np-title">Доставка Нова пошта</span>
+          <span class="np-logo">
+            <img src="assets/NP_Logo_Round_24x24.svg" alt="Нова пошта">
+          </span>
+        </div>
+      </div>
+
+      <!-- Поле поиска -->
+      <div class="np-search">
+        <div class="search-icon">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9" cy="9" r="6" stroke="#808080" stroke-width="1.6"/>
+            <path d="M13.5 13.5L17 17" stroke="#808080" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="placeholder">Адреса або номер відділення</span>
+      </div>
+
+      <!-- Скроллируемый список с двумя секциями -->
+      <div class="np-list">
+
+        <!-- Секция: Останні (последние выбранные пользователем) -->
+        <div class="np-section-label">Останні</div>
+
+        <!-- Останні: Відділення №27 (до 30 кг — обычная посылка) -->
+        <div class="np-item" data-addr="Відділення №27, вул. Пироговський шлях, 136" data-line2="">
+          <div class="icon-square">
+            <img src="assets/Box.png" alt="">
+          </div>
+          <div class="body">
+            <div class="name">Відділення №27</div>
+            <div class="addr">вул. Пироговський шлях, 136</div>
+          </div>
+          <div class="weight">до 30 кг</div>
+        </div>
+
+        <!-- Останні: Поштомат №28277 (до 20 кг) -->
+        <div class="np-item" data-addr="Поштомат №28277, вул. Федорова, 32 (м. Олімпійська)" data-line2="">
+          <div class="icon-square">
+            <img src="assets/Post.png" alt="">
+          </div>
+          <div class="body">
+            <div class="name">Поштомат №28277</div>
+            <div class="addr">вул. Федорова, 32 (м. Олімпійська)</div>
+          </div>
+          <div class="weight">до 20 кг</div>
+        </div>
+
+        <!-- Секция: Доступні (все остальные доступные отделения) -->
+        <div class="np-section-label">Доступні</div>
+
+        <!-- Доступні: Відділення №1 (до 1100 кг — грузовое) -->
+        <div class="np-item" data-addr="Відділення №1, Київське шосе, 27" data-line2="">
+          <div class="icon-square">
+            <img src="assets/Delivery_Car.png" alt="">
+          </div>
+          <div class="body">
+            <div class="name">Відділення №1</div>
+            <div class="addr">Київське шосе, 27</div>
+          </div>
+          <div class="weight">до 1100 кг</div>
+        </div>
+
+        <!-- Доступні: Відділення №2 (до 1100 кг — грузовое) -->
+        <div class="np-item" data-addr="Відділення №2, вул. Базова, 16" data-line2="">
+          <div class="icon-square">
+            <img src="assets/Delivery_Car.png" alt="">
+          </div>
+          <div class="body">
+            <div class="name">Відділення №2</div>
+            <div class="addr">вул. Базова, 16</div>
+          </div>
+          <div class="weight">до 1100 кг</div>
+        </div>
+
+        <!-- Доступні: Відділення №3 (до 30 кг — обычная посылка) -->
+        <div class="np-item" data-addr="Відділення №3, вул. Дальницька, 23/4" data-line2="">
+          <div class="icon-square">
+            <img src="assets/Box.png" alt="">
+          </div>
+          <div class="body">
+            <div class="name">Відділення №3</div>
+            <div class="addr">вул. Дальницька, 23/4</div>
+          </div>
+          <div class="weight">до 30 кг</div>
+        </div>
+
+        <!-- Доступні: Відділення №4 (до 20 кг — обычная посылка) -->
+        <div class="np-item" data-addr="Відділення №4, вул. Федорова, 32 (м. Олімпійська)" data-line2="">
+          <div class="icon-square">
+            <img src="assets/Box.png" alt="">
+          </div>
+          <div class="body">
+            <div class="name">Відділення №4</div>
+            <div class="addr">вул. Федорова, 32 (м. Олімпійська)</div>
+          </div>
+          <div class="weight">до 20 кг</div>
+        </div>
+
+      </div><!-- /.np-list -->
+
+      <!-- Home indicator -->
+      <div class="home-indicator" style="z-index:32;">
+        <img src="assets/home_indicator.svg" alt="">
+      </div>
+
+    </div><!-- /.np-screen -->
+
     </div><!-- /.phone -->
   </div><!-- /.device -->
 
@@ -2562,23 +2924,64 @@
   // возвращает к чекауту.
   // Cart-экран — стартовый, кнопка "Продовжити" в нём ведёт на чекаут,
   // back в чекауте — обратно на корзину.
+  // NP-экран — выбор отделения Нової Пошти, открывается по "Змінити відділення"
+  // на чекауте в опции "До відділення безкоштовно".
   const cartScreen     = document.getElementById('cartScreen');
   const checkoutScreen = document.getElementById('checkoutScreen');
   const pickupScreen   = document.getElementById('pickupScreen');
+  const npScreen       = document.getElementById('npScreen');
   function showScreen(name) {
     cartScreen.classList.toggle('active',     name === 'cart');
     checkoutScreen.classList.toggle('active', name === 'checkout');
     pickupScreen.classList.toggle('active',   name === 'pickup');
+    npScreen.classList.toggle('active',       name === 'np');
     // На каждом переключении ресетим скролл наверх — иначе при возврате
-    // пользователь видит середину экрана. Скроллим только активный.
-    const active = document.querySelector('.screen.active .scroll-area');
-    if (active) active.scrollTop = 0;
+    // пользователь видит середину экрана. У разных экранов разные
+    // скролл-контейнеры (.scroll-area для cart/checkout, .np-list для np,
+    // pickup-screen имеет свой внутренний скролл).
+    const active = document.querySelector('.screen.active');
+    if (active) {
+      const scrollEl = active.querySelector('.scroll-area, .np-list, .pickup-list');
+      if (scrollEl) scrollEl.scrollTop = 0;
+    }
   }
   document.querySelector('.pickup-merchant .pickup-link').addEventListener('click', () => {
     showScreen('pickup');
   });
   document.getElementById('pickupBackBtn').addEventListener('click', () => {
     showScreen('checkout');
+  });
+
+  // ===== NP-экран: переход и возврат =====
+  // "Змінити відділення" в опции dept на чекауте → переход на NP-экран.
+  // Текущий выбор НП на чекауте читаем из адресного блока опции dept.
+  // Селектор работает в обе стороны: до/после смены адреса.
+  document.querySelector('.opt-dept .change-link').addEventListener('click', (e) => {
+    e.stopPropagation();   // чтобы клик не дошёл до .delivery-option (там toggle)
+    showScreen('np');
+  });
+  // Back в NP-экране → возврат на чекаут.
+  document.getElementById('npBackBtn').addEventListener('click', () => {
+    showScreen('checkout');
+  });
+  // Клик по пункту в NP-списке: записываем адрес в опцию dept на чекауте
+  // и возвращаемся к чекауту. Адрес храним в data-addr пункта.
+  document.querySelectorAll('#npScreen .np-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const addr = item.getAttribute('data-addr');
+      if (addr) {
+        const deptAddrEl = document.querySelector('.opt-dept .opt-body .address');
+        if (deptAddrEl) {
+          // Разбиваем "Відділення №X, ..." на номер + остаток через первую запятую
+          // для согласованности с текущей разметкой (название + перенос + детали).
+          const parts = addr.split(',');
+          const head  = parts.shift().trim();          // "Відділення №X" / "Поштомат №..."
+          const tail  = parts.join(',').trim();        // "вул. X, ..."
+          deptAddrEl.innerHTML = head + ',<br>' + tail;
+        }
+      }
+      showScreen('checkout');
+    });
   });
   // Клик по карточке магазина: запоминаем выбранный адрес, возвращаем на
   // чекаут, добавляем подстейт state-pickup-selected (рисует адрес и меняет
