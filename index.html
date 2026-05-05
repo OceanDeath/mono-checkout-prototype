@@ -237,6 +237,7 @@
     left: 16px; top: 14px;
     height: 20px;
     display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
   }
   .cart-card .cart-icon { width: 20px; height: 20px; display: block; }
   .cart-card .header .title {
@@ -1404,6 +1405,464 @@
   }
   .city-row:last-child::after { display: none; }
 
+  /* ======================================================================
+     Экран «Ваш кошик»  (figma frame 6324:7410)
+     - Фон #f4f4f4 (как чекаут), но без синего top-chrome — белый/прозрачный
+       статусбар на сером, заголовок 24/700 чёрным, справа кнопка Share.
+     - Карточки товаров: радио-чек слева, тайтл и бренд по центру, превью 64px справа,
+       степпер qty + цена внизу.
+     - Лиловый баннер "Ліміт на покупку частинами 120 000 ₴" сразу под хедером.
+     - Snap-bottom: белый суммарный блок (radio "Вибрати всі" + сумма + кнопка),
+       поверх него плавающий нав-бар (Банк / Головна / Кабінет / Кошик / Базар).
+     ====================================================================== */
+  .cart-screen {
+    background: #f4f4f4;
+  }
+
+  /* Хедер корзины — статичный, не collapsible */
+  .cart-header {
+    position: absolute;
+    left: 0; top: 0;
+    width: 375px;
+    height: 96px;
+    z-index: 30;
+    background: #f4f4f4;
+  }
+  /* Чёрные статусбар-иконки на сером фоне */
+  .cart-header .statusbar .time { color: #000; }
+  .cart-header .statusbar .icons img {
+    /* SVG-ы wifi/cellular/battery белые (под синюю шапку чекаута),
+       на сером инвертируем в чёрный — как в pickup-screen. */
+    filter: invert(1);
+  }
+  .cart-header .cart-title {
+    position: absolute;
+    left: 16px; top: 56px;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: 0.36px;
+    color: #000;
+  }
+  .cart-header .share-btn {
+    position: absolute;
+    right: 16px; top: 60px;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+  }
+  .cart-header .share-btn img { width: 24px; height: 24px; display: block; }
+
+  /* Скролл-область корзины — со своим pad-top под хедер и pad-bottom под bottom-бар.
+     Bottom-блок корзины — 232px (summary 116 + nav-bar zone 116 пересекаются),
+     добавляем 20px воздуха = 252. */
+  .cart-screen .scroll-area {
+    padding: 96px 0 252px 0;
+    gap: 12px;
+  }
+
+  /* Лиловый баннер лимита */
+  .limit-banner {
+    margin: 0 16px;
+    height: 44px;
+    background: #d6d4ff;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px 0 8px;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .limit-banner .paw {
+    width: 20px; height: 20px;
+    margin-left: 4px;
+    flex: none;
+  }
+  .limit-banner .label {
+    flex: 1;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.154px;
+    color: #000;
+  }
+  .limit-banner .amount {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.154px;
+    color: #000;
+  }
+
+  /* === Карточка товара === */
+  .item-card {
+    position: relative;
+    background: #fff;
+    border-radius: 16px;
+    margin: 0 16px;
+    box-shadow:
+      0 12px 24px -8px rgba(0, 30, 80, 0.10),
+      0 4px 8px -2px rgba(0, 30, 80, 0.05);
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 20px 1fr 64px;
+    grid-template-rows: auto auto auto;
+    column-gap: 12px;
+    row-gap: 8px;
+    align-items: start;
+    flex-shrink: 0;
+  }
+
+  /* Радио-чек */
+  .item-card .radio {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid #d6d6d6;
+    background: #fff;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease;
+    grid-column: 1;
+    grid-row: 1;
+    margin-top: 2px;
+    position: relative;
+  }
+  .item-card .radio.checked {
+    background: #306eff;
+    border-color: #306eff;
+  }
+  .item-card .radio.checked::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M5.5 10.5 L8.5 13.5 L14.5 7' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>") center/16px no-repeat;
+  }
+
+  /* Тайтл */
+  .item-card .item-title {
+    grid-column: 2;
+    grid-row: 1;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #000;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    padding-right: 4px;
+  }
+
+  /* Превью товара (PNG из assets) */
+  .item-card .item-thumb {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    width: 64px;
+    height: 64px;
+    background: #fff;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .item-card .item-thumb img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* Бренд */
+  .item-card .brand {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 20px;
+  }
+  .item-card .brand-logo {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex: none;
+    object-fit: cover;
+    background: #fff;
+  }
+  .item-card .brand-name {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #808080;
+  }
+
+  /* Ряд цен + qty */
+  .item-card .price-row {
+    grid-column: 2 / span 2;
+    grid-row: 3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+  .item-card .price {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.0576px;
+    color: #000;
+  }
+  .item-card .discount-badge {
+    background: #fa5255;
+    color: #fff;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: -0.0288px;
+    padding: 0 6px;
+    height: 16px;
+    line-height: 16px;
+    border-radius: 6px;
+  }
+  .item-card .old-price {
+    width: 100%;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #808080;
+    text-decoration: line-through;
+    margin-top: -2px;
+  }
+
+  /* Степпер qty */
+  .item-card .qty {
+    margin-left: auto;
+    width: 80px;
+    height: 32px;
+    background: #f5f5f5;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+  }
+  .item-card .qty button {
+    width: 16px;
+    height: 16px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+    display: grid;
+    place-items: center;
+  }
+  .item-card .qty button img { width: 16px; height: 16px; display: block; }
+  .item-card .qty .count {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: #000;
+    min-width: 20px;
+  }
+  .item-card.no-discount .discount-badge,
+  .item-card.no-discount .old-price { display: none; }
+
+  /* === Bottom-зона корзины: summary + floating nav === */
+  .cart-bottom {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    z-index: 30;
+    pointer-events: none;
+  }
+  .cart-summary {
+    background: #fff;
+    border-radius: 24px 24px 0 0;
+    padding: 20px 16px 24px 16px;
+    box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.04);
+    pointer-events: auto;
+    margin-bottom: -16px; /* чтобы nav-zone "наплывал" сверху */
+  }
+  .cart-summary-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .cart-summary-row .radio {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid #d6d6d6;
+    background: #fff;
+    cursor: pointer;
+    flex: none;
+    position: relative;
+    transition: background 0.12s ease, border-color 0.12s ease;
+  }
+  .cart-summary-row .radio.checked {
+    background: #306eff;
+    border-color: #306eff;
+  }
+  .cart-summary-row .radio.checked::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M5.5 10.5 L8.5 13.5 L14.5 7' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>") center/16px no-repeat;
+  }
+  .select-all-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .select-all-info .main {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #000;
+  }
+  .select-all-info .sub {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    color: #808080;
+  }
+  .cart-total {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.0576px;
+    color: #000;
+  }
+  /* Используем существующий .continue-btn, но переопределяем позицию для корзины */
+  .cart-summary .continue-btn {
+    position: static;
+    width: 100%;
+    height: 48px;
+    border-radius: 16px;
+    background: linear-gradient(to right, #3083ff 0%, #306aff 100%);
+    border: 0;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: -0.0512px;
+    cursor: pointer;
+    transition: transform 0.08s ease, opacity 0.15s ease;
+  }
+  .cart-summary .continue-btn:active { transform: scale(0.985); opacity: 0.92; }
+
+  /* Плавающий нав-бар: левая FAB Банк, центральная пилюля,
+     правая FAB Базар. Лежит поверх .cart-summary, прибит к низу. */
+  .cart-nav {
+    position: absolute;
+    left: 16px; right: 16px;
+    bottom: 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+  .cart-nav .fab,
+  .cart-nav .nav-pill {
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 0.5px solid #efecec;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+  .cart-nav .fab {
+    width: 64px;
+    height: 64px;
+    border-radius: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    border: 0.5px solid #efecec;
+    cursor: pointer;
+    padding: 0;
+  }
+  .cart-nav .fab.right {
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    border-radius: 40px;
+  }
+  .cart-nav .fab img { width: 24px; height: 24px; display: block; }
+  .cart-nav .fab .fab-label {
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: -0.24px;
+    color: #b2b2b2;
+  }
+  .cart-nav .nav-pill {
+    width: 200px;
+    height: 64px;
+    border-radius: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px;
+  }
+  .cart-nav .nav-item {
+    width: 56px;
+    background: transparent;
+    border: 0;
+    padding: 6px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    position: relative;
+  }
+  .cart-nav .nav-item img { width: 24px; height: 24px; display: block; }
+  .cart-nav .nav-item span {
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: -0.24px;
+    color: #b2b2b2;
+  }
+  .cart-nav .nav-item.active span { color: #5558e3; }
+  .cart-nav .nav-item .badge {
+    position: absolute;
+    top: 2px;
+    right: 8px;
+    min-width: 16px;
+    height: 16px;
+    background: #fa5255;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 16px;
+    text-align: center;
+    padding: 0 4px;
+    letter-spacing: -0.1268px;
+  }
+
+  /* Home indicator корзины */
+  .cart-screen .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: #000;
+    border-radius: 100px;
+    z-index: 31;
+  }
+
 </style>
 </head>
 <body>
@@ -1416,8 +1875,151 @@
 
     <div class="phone">
 
-    <!-- ====== Экран чекаута (default) ====== -->
-    <div class="screen checkout-screen active" id="checkoutScreen">
+    <!-- ====== Экран Кошик (default) ====== -->
+    <div class="screen cart-screen active" id="cartScreen">
+
+      <!-- Хедер: статусбар + заголовок + share -->
+      <div class="cart-header">
+        <div class="statusbar">
+          <div class="time">19:12</div>
+          <div class="icons">
+            <img src="assets/cellular.svg" alt="" width="17" height="11">
+            <img src="assets/wifi.svg" alt="" width="16" height="11">
+            <img src="assets/battery.svg" alt="" width="25" height="12">
+          </div>
+        </div>
+        <div class="cart-title">Ваш кошик</div>
+        <button class="share-btn" aria-label="Поділитись">
+          <img src="assets/Share.svg" alt="">
+        </button>
+      </div>
+
+      <!-- Скролл-область -->
+      <div class="scroll-area">
+
+        <!-- Лиловый баннер лимита -->
+        <div class="limit-banner">
+          <img class="paw" src="assets/Lapka.svg" alt="">
+          <span class="label">Ліміт на покупку частинами</span>
+          <span class="amount">120 000 ₴</span>
+        </div>
+
+        <!-- Карточка 1: Миша Logitech / Фокстрот / без знижки -->
+        <div class="item-card no-discount" data-id="mouse" data-base-price="3999">
+          <div class="radio checked" role="checkbox" aria-checked="true"></div>
+          <div class="item-title">Миша Logitech MX Master 3S Performance Wireless</div>
+          <div class="item-thumb"><img src="assets/product_cart_3.png" alt=""></div>
+          <div class="brand">
+            <img class="brand-logo" src="assets/Foxtrot_logo.png" alt="">
+            <span class="brand-name">Фокстрот</span>
+          </div>
+          <div class="price-row">
+            <span class="price"><span class="price-num">3 999</span> ₴</span>
+            <div class="qty">
+              <button class="qty-decrease" aria-label="Зменшити"><img src="assets/Delete.svg" alt=""></button>
+              <span class="count">1</span>
+              <button class="qty-increase" aria-label="Збільшити"><img src="assets/Add.svg" alt=""></button>
+            </div>
+            <div class="old-price"></div>
+          </div>
+        </div>
+
+        <!-- Карточка 2: Ноутбук Asus TUF / KTC / -15% -->
+        <div class="item-card" data-id="laptop1" data-base-price="31199" data-old-base="44999" data-discount="15">
+          <div class="radio checked" role="checkbox" aria-checked="true"></div>
+          <div class="item-title">Ноутбук Asus TUF Gaming F15 FX507ZC4-HN083 Me…</div>
+          <div class="item-thumb"><img src="assets/product_cart_1.png" alt=""></div>
+          <div class="brand">
+            <img class="brand-logo" src="assets/KTC_logo.png" alt="">
+            <span class="brand-name">KTC</span>
+          </div>
+          <div class="price-row">
+            <span class="price"><span class="price-num">31 199</span> ₴</span>
+            <span class="discount-badge">-15%</span>
+            <div class="qty">
+              <button class="qty-decrease" aria-label="Зменшити"><img src="assets/Delete.svg" alt=""></button>
+              <span class="count">1</span>
+              <button class="qty-increase" aria-label="Збільшити"><img src="assets/Add.svg" alt=""></button>
+            </div>
+            <div class="old-price"><span class="old-num">44 999</span></div>
+          </div>
+        </div>
+
+        <!-- Карточка 3: Ноутбук Asus TUF / KTC / -15% -->
+        <div class="item-card" data-id="laptop2" data-base-price="31199" data-old-base="44999" data-discount="15">
+          <div class="radio checked" role="checkbox" aria-checked="true"></div>
+          <div class="item-title">Ноутбук Asus TUF Gaming F15 FX507ZC4-HN083 Me…</div>
+          <div class="item-thumb"><img src="assets/product_cart_2.png" alt=""></div>
+          <div class="brand">
+            <img class="brand-logo" src="assets/KTC_logo.png" alt="">
+            <span class="brand-name">KTC</span>
+          </div>
+          <div class="price-row">
+            <span class="price"><span class="price-num">31 199</span> ₴</span>
+            <span class="discount-badge">-15%</span>
+            <div class="qty">
+              <button class="qty-decrease" aria-label="Зменшити"><img src="assets/Delete.svg" alt=""></button>
+              <span class="count">1</span>
+              <button class="qty-increase" aria-label="Збільшити"><img src="assets/Add.svg" alt=""></button>
+            </div>
+            <div class="old-price"><span class="old-num">44 999</span></div>
+          </div>
+        </div>
+
+      </div><!-- /.scroll-area -->
+
+      <!-- Bottom: summary + nav-bar поверх -->
+      <div class="cart-bottom">
+        <div class="cart-summary">
+          <div class="cart-summary-row">
+            <div class="radio checked" id="selectAllRadio" role="checkbox" aria-checked="true"></div>
+            <div class="select-all-info">
+              <span class="main">Вибрати всі</span>
+              <span class="sub" id="selectedCountText">Обрано 3 товари</span>
+            </div>
+            <div class="cart-total"><span id="cartTotalAmount">66 397</span> ₴</div>
+          </div>
+          <button class="continue-btn" id="cartContinueBtn">Продовжити</button>
+        </div>
+
+        <!-- Плавающий нав-бар -->
+        <div class="cart-nav">
+          <button class="fab" aria-label="Банк">
+            <img src="assets/cards_icon.svg" alt="">
+            <span class="fab-label">Банк</span>
+          </button>
+          <div class="nav-pill">
+            <button class="nav-item">
+              <img src="assets/market_icon.svg" alt="">
+              <span>Головна</span>
+            </button>
+            <button class="nav-item">
+              <img src="assets/Cabinet_icon.svg" alt="">
+              <span>Кабінет</span>
+            </button>
+            <button class="nav-item active" aria-current="page">
+              <!-- Активная иконка кошика — фиолетовая, прорисуем SVG напрямую -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 0C15.31 0 18 2.69 18 6v0.04c1.85 0.18 3.36 1.64 3.57 3.52l0.79 6.89C22.7 19.42 20.38 22.02 17.4 22.02H6.61C3.62 22.02 1.3 19.42 1.64 16.45l0.79-6.89c0.22-1.88 1.72-3.34 3.58-3.52V6C6 2.69 8.69 0 12 0z M8 9.02C7.45 9.02 7 9.47 7 10.02C7 10.57 7.45 11.02 8 11.02C8.55 11.02 9 10.57 9 10.02C9 9.47 8.55 9.02 8 9.02zM16 9.02C15.45 9.02 15 9.47 15 10.02C15 10.57 15.45 11.02 16 11.02C16.55 11.02 17 10.57 17 10.02C17 9.47 16.55 9.02 16 9.02zM12 2C9.79 2 8 3.79 8 6v0.02h8V6C16 3.79 14.21 2 12 2z" fill="#5558E3"/>
+              </svg>
+              <span>Кошик</span>
+              <span class="badge" id="cartBadge">3</span>
+            </button>
+          </div>
+          <button class="fab right" aria-label="Базар">
+            <img src="assets/Bazar_Icon.svg" alt="">
+            <span class="fab-label">Базар</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Home indicator -->
+      <div class="home-indicator"></div>
+
+    </div><!-- /.cart-screen -->
+
+    <!-- ====== Экран чекаута ====== -->
+    <div class="screen checkout-screen" id="checkoutScreen">
 
     <!-- ====== Прокручиваемая область (под шапкой) ====== -->
     <div class="scroll-area">
@@ -1887,20 +2489,38 @@
     console.log('continue');
   });
 
-  // ===== Back в чекауте =====
+  // ===== Back в чекауте → возврат в корзину =====
   document.querySelector('.checkout-screen .back-btn').addEventListener('click', () => {
-    console.log('back');
+    showScreen('cart');
+  });
+
+  // ===== Клик по карточке "Кошик" в чекауте (icon+title или кнопка "Редагувати")
+  //       тоже ведёт на корзину =====
+  document.querySelector('.cart-card .header').addEventListener('click', () => {
+    showScreen('cart');
+  });
+  document.querySelector('.cart-card .edit-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    showScreen('cart');
   });
 
   // ===== Переключение экранов =====
   // По клику на «Оберіть адресу магазину» в стейте pickup переходим на
   // отдельный экран со списком магазинов KTC. Кнопка back на том экране
   // возвращает к чекауту.
+  // Cart-экран — стартовый, кнопка "Продовжити" в нём ведёт на чекаут,
+  // back в чекауте — обратно на корзину.
+  const cartScreen     = document.getElementById('cartScreen');
   const checkoutScreen = document.getElementById('checkoutScreen');
   const pickupScreen   = document.getElementById('pickupScreen');
   function showScreen(name) {
+    cartScreen.classList.toggle('active',     name === 'cart');
     checkoutScreen.classList.toggle('active', name === 'checkout');
-    pickupScreen.classList.toggle('active', name === 'pickup');
+    pickupScreen.classList.toggle('active',   name === 'pickup');
+    // На каждом переключении ресетим скролл наверх — иначе при возврате
+    // пользователь видит середину экрана. Скроллим только активный.
+    const active = document.querySelector('.screen.active .scroll-area');
+    if (active) active.scrollTop = 0;
   }
   document.querySelector('.pickup-merchant .pickup-link').addEventListener('click', () => {
     showScreen('pickup');
@@ -1949,6 +2569,140 @@
       closeCityModal();
     });
   });
+
+  // ====================================================================
+  // ===== Корзина: количество, выбор, итоги, переход на чекаут =========
+  // ====================================================================
+
+  // Форматирование числа с пробелами как разделителями тысяч (укр. локаль).
+  // Используем NBSP (\u00A0) чтобы цена не разрывалась переносом строки.
+  function fmtPrice(n) {
+    return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+  }
+
+  // Украинская плюрализация для "товар": 1 товар, 2-4 товари, 5+ товарів,
+  // с исключением для 11-19 (всегда "товарів").
+  function pluralUk(n) {
+    const a = Math.abs(n) % 100, b = a % 10;
+    if (a >= 11 && a <= 19) return 'товарів';
+    if (b === 1) return 'товар';
+    if (b >= 2 && b <= 4) return 'товари';
+    return 'товарів';
+  }
+
+  // Перерасчёт цены и старой цены конкретной карточки на основе её
+  // текущего qty. Сама карточка хранит data-base-price и data-old-base.
+  function renderCardPrices(card) {
+    const qty       = parseInt(card.querySelector('.count').textContent, 10) || 1;
+    const basePrice = parseFloat(card.dataset.basePrice) || 0;
+    const oldBase   = parseFloat(card.dataset.oldBase) || 0;
+
+    card.querySelector('.price-num').textContent = fmtPrice(basePrice * qty);
+    if (oldBase) {
+      const oldNumEl = card.querySelector('.old-num');
+      if (oldNumEl) oldNumEl.textContent = fmtPrice(oldBase * qty);
+    }
+    // Кэшируем актуальную цену в data-attr для быстрого подсчёта итогов
+    card.dataset.currentPrice = String(basePrice * qty);
+  }
+
+  // Пересчёт итогов: total суммы выбранных товаров, текстовый счётчик
+  // "Обрано N товар(и/ів)", синхронизация select-all radio, обновление
+  // бейджа "Кошик" в нав-баре.
+  function updateCartTotals() {
+    let total = 0, n = 0;
+    document.querySelectorAll('#cartScreen .item-card').forEach(card => {
+      if (card.querySelector('.radio.checked')) {
+        total += parseFloat(card.dataset.currentPrice) || 0;
+        n     += parseInt(card.querySelector('.count').textContent, 10) || 0;
+      }
+    });
+    document.getElementById('cartTotalAmount').textContent = fmtPrice(total);
+    document.getElementById('selectedCountText').textContent =
+      `Обрано ${n} ${pluralUk(n)}`;
+
+    // Sync select-all radio
+    const radios = document.querySelectorAll('#cartScreen .item-card .radio');
+    const allChecked = radios.length > 0 && [...radios].every(r => r.classList.contains('checked'));
+    const selectAll = document.getElementById('selectAllRadio');
+    selectAll.classList.toggle('checked', allChecked);
+    selectAll.setAttribute('aria-checked', allChecked);
+
+    // Бейдж в нав-баре корзины показывает общее число карточек
+    const badge = document.getElementById('cartBadge');
+    const totalCards = document.querySelectorAll('#cartScreen .item-card').length;
+    if (totalCards === 0) {
+      badge.style.display = 'none';
+    } else {
+      badge.style.display = '';
+      badge.textContent = String(totalCards);
+    }
+  }
+
+  // Привязка обработчиков к каждой карточке (radio/qty +/-)
+  document.querySelectorAll('#cartScreen .item-card').forEach(card => {
+    const radio = card.querySelector('.radio');
+    const dec   = card.querySelector('.qty-decrease');
+    const inc   = card.querySelector('.qty-increase');
+    const count = card.querySelector('.count');
+
+    // первичный рендер (на случай не-1 qty в дефолте)
+    renderCardPrices(card);
+
+    radio.addEventListener('click', () => {
+      radio.classList.toggle('checked');
+      radio.setAttribute('aria-checked', radio.classList.contains('checked'));
+      updateCartTotals();
+    });
+
+    inc.addEventListener('click', () => {
+      const q = parseInt(count.textContent, 10) || 1;
+      if (q < 99) {
+        count.textContent = String(q + 1);
+        renderCardPrices(card);
+        updateCartTotals();
+      }
+    });
+
+    dec.addEventListener('click', () => {
+      const q = parseInt(count.textContent, 10) || 1;
+      if (q > 1) {
+        count.textContent = String(q - 1);
+        renderCardPrices(card);
+        updateCartTotals();
+      } else {
+        // qty=1, нажимаем delete → удаляем карточку
+        card.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.97)';
+        setTimeout(() => {
+          card.remove();
+          updateCartTotals();
+        }, 220);
+      }
+    });
+  });
+
+  // Select-all toggle
+  document.getElementById('selectAllRadio').addEventListener('click', () => {
+    const radios = document.querySelectorAll('#cartScreen .item-card .radio');
+    const allChecked = [...radios].every(r => r.classList.contains('checked'));
+    radios.forEach(r => {
+      r.classList.toggle('checked', !allChecked);
+      r.setAttribute('aria-checked', !allChecked);
+    });
+    updateCartTotals();
+  });
+
+  // Кнопка "Продовжити" в корзине → переход на чекаут.
+  // Передачу данных не делаем: сумма/состав в чекауте — фиксированная
+  // дизайнерская заглушка (85 198 ₴, 3 товара). Это прототип.
+  document.getElementById('cartContinueBtn').addEventListener('click', () => {
+    showScreen('checkout');
+  });
+
+  // Initial totals render
+  updateCartTotals();
 </script>
 </body>
 </html>
