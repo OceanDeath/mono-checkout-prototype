@@ -1438,10 +1438,12 @@
   .cart-header .cart-title {
     position: absolute;
     left: 16px; top: 56px;
+    /* letter-spacing -0.36px — как в pickup-screen ("Самовивіз з магазину"),
+       минусовый трекинг для более компактного, нативно-iOS-вого вида */
     font-weight: 700;
     font-size: 24px;
     line-height: 32px;
-    letter-spacing: 0.36px;
+    letter-spacing: -0.36px;
     color: #000;
   }
   .cart-header .share-btn {
@@ -1483,7 +1485,7 @@
   }
   .limit-banner .label {
     flex: 1;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
     line-height: 20px;
     letter-spacing: -0.154px;
@@ -1497,27 +1499,37 @@
     color: #000;
   }
 
-  /* === Карточка товара === */
+  /* === Карточка товара ===
+     Абсолютные координаты внутри карточки — в стиле остальных карточек
+     этого прототипа (cart-card, payment-card, delivery-card в чекауте).
+     Расстояния:
+       • радио — y=18 (фактическое верхнее поле 18px)
+       • тайтл — y=18 центр первой строки совпадает с радио
+       • расстояние тайтл→бренд: 8px
+       • расстояние бренд→цена: 8px
+       • расстояние цена→old-price: 4px
+       • превью 64×64 справа на 12px от верха
+     Высота: 144px (со скидкой = с old-price), 128px (без скидки) */
   .item-card {
     position: relative;
     background: #fff;
     border-radius: 16px;
     margin: 0 16px;
+    height: 144px;
     box-shadow:
       0 12px 24px -8px rgba(0, 30, 80, 0.10),
       0 4px 8px -2px rgba(0, 30, 80, 0.05);
-    padding: 16px;
-    display: grid;
-    grid-template-columns: 20px 1fr 64px;
-    grid-template-rows: auto auto auto;
-    column-gap: 12px;
-    row-gap: 8px;
-    align-items: start;
     flex-shrink: 0;
+  }
+  /* Карточка без скидки короче (нет строки old-price) */
+  .item-card.no-discount {
+    height: 128px;
   }
 
   /* Радио-чек */
   .item-card .radio {
+    position: absolute;
+    left: 12px; top: 18px;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -1525,10 +1537,6 @@
     background: #fff;
     cursor: pointer;
     transition: background 0.12s ease, border-color 0.12s ease;
-    grid-column: 1;
-    grid-row: 1;
-    margin-top: 2px;
-    position: relative;
   }
   .item-card .radio.checked {
     background: #306eff;
@@ -1541,31 +1549,31 @@
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M5.5 10.5 L8.5 13.5 L14.5 7' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>") center/16px no-repeat;
   }
 
-  /* Тайтл */
+  /* Тайтл — 2 строки × 20px, верх y=14 (центр первой строки на 24, на одной
+     линии с радио центром на y=28). Низ тайтла = 14+40 = 54. */
   .item-card .item-title {
-    grid-column: 2;
-    grid-row: 1;
-    font-weight: 500;
+    position: absolute;
+    left: 44px; top: 14px;
+    width: 195px;
+    height: 40px;
+    font-weight: 600;        /* медиум → семибольд: «чуть толще», п.4 запроса */
     font-size: 14px;
-    line-height: 1.4;
+    line-height: 20px;
     color: #000;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    padding-right: 4px;
   }
 
-  /* Превью товара (PNG из assets) */
+  /* Превью товара (PNG) — 64×64 справа на y=12 */
   .item-card .item-thumb {
-    grid-column: 3;
-    grid-row: 1 / span 2;
+    position: absolute;
+    right: 16px; top: 12px;
     width: 64px;
     height: 64px;
     background: #fff;
     border-radius: 8px;
-    display: grid;
-    place-items: center;
     overflow: hidden;
   }
   .item-card .item-thumb img {
@@ -1575,14 +1583,14 @@
     display: block;
   }
 
-  /* Бренд */
+  /* Бренд (logo + name) — y=62 (низ тайтла 54 + gap 8) */
   .item-card .brand {
-    grid-column: 2;
-    grid-row: 2;
+    position: absolute;
+    left: 44px; top: 62px;
+    height: 20px;
     display: flex;
     align-items: center;
     gap: 8px;
-    height: 20px;
   }
   .item-card .brand-logo {
     width: 20px;
@@ -1599,47 +1607,57 @@
     color: #808080;
   }
 
-  /* Ряд цен + qty */
-  .item-card .price-row {
-    grid-column: 2 / span 2;
-    grid-row: 3;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 4px;
-    flex-wrap: wrap;
-  }
+  /* Цена — y=90 (низ бренда 82 + gap 8) */
   .item-card .price {
+    position: absolute;
+    left: 44px; top: 90px;
+    height: 24px;
     font-weight: 700;
     font-size: 18px;
     line-height: 24px;
     letter-spacing: -0.0576px;
     color: #000;
+    display: flex;
+    align-items: center;
   }
+  /* Бэйдж скидки — справа от цены, центрирован вертикально с ценой */
   .item-card .discount-badge {
+    position: absolute;
+    /* Цена ширина ~85px (для "31 199 ₴" — 5 цифр), бэйдж сразу справа.
+       Цена начинается на 44, занимает ~80px, плюс gap 4 → 128.
+       Центрирован по вертикали с ценой (h=24, центр на 102, badge h=16, top=94). */
+    left: 129px; top: 94px;
+    height: 16px;
+    padding: 0 6px;
     background: #fa5255;
+    border-radius: 6px;
     color: #fff;
     font-weight: 700;
     font-size: 9px;
-    letter-spacing: -0.0288px;
-    padding: 0 6px;
-    height: 16px;
     line-height: 16px;
-    border-radius: 6px;
+    letter-spacing: -0.0288px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+  /* Old-price (перечёркнутая) — y=118 (низ цены 114 + gap 4) */
   .item-card .old-price {
-    width: 100%;
+    position: absolute;
+    left: 44px; top: 118px;
+    height: 16px;
     font-weight: 400;
     font-size: 14px;
-    line-height: 1.4;
+    line-height: 16px;
     color: #808080;
     text-decoration: line-through;
-    margin-top: -2px;
+    display: flex;
+    align-items: center;
   }
 
-  /* Степпер qty */
+  /* Степпер qty — справа на y=86 (центр совпадает с центром цены 102) */
   .item-card .qty {
-    margin-left: auto;
+    position: absolute;
+    right: 12px; top: 86px;
     width: 80px;
     height: 32px;
     background: #f5f5f5;
@@ -1647,7 +1665,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 10px;
+    padding: 0 8px;
   }
   .item-card .qty button {
     width: 16px;
@@ -1671,20 +1689,34 @@
   .item-card.no-discount .discount-badge,
   .item-card.no-discount .old-price { display: none; }
 
-  /* === Bottom-зона корзины: summary + floating nav === */
+  /* === Bottom-зона корзины ===
+     По Figma 6324:7410:
+       • summary-блок (Вибрати всі / сумма / Продовжити) — y=580–812 (высота 232,
+         кнопка bottom=116). Это «верхний» белый блок, поднят выше нав-бара.
+       • Под ним — белый градиент-fade 96px (transparent → white), на котором
+         плавает нав-бар (FAB Банк слева, пилюля по центру, FAB Базар справа).
+       • Нав-бар по своим координатам перекрывает нижнюю часть fade'а, FAB на
+         bottom=32, пилюля top=716 → bottom=32 от 812.
+       • Сама summary-карточка не пересекается с нав-баром: между кнопкой
+         "Продовжити" (низ y=696) и пилюлей нав-бара (верх y=716) ровно 20px. */
   .cart-bottom {
     position: absolute;
     left: 0; right: 0; bottom: 0;
+    height: 232px;
     z-index: 30;
     pointer-events: none;
   }
   .cart-summary {
     background: #fff;
     border-radius: 24px 24px 0 0;
-    padding: 20px 16px 24px 16px;
+    padding: 16px 16px 116px 16px;
+    /* 116 нижнего паддинга = свободная зона под кнопкой, на которую
+       наплывает нав-бар. Кнопка позиционирована абсолютно с bottom:116. */
     box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.04);
     pointer-events: auto;
-    margin-bottom: -16px; /* чтобы nav-zone "наплывал" сверху */
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 100%;
   }
   .cart-summary-row {
     display: flex;
@@ -1720,7 +1752,7 @@
     gap: 2px;
   }
   .select-all-info .main {
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
     line-height: 20px;
     color: #000;
@@ -1738,10 +1770,14 @@
     letter-spacing: -0.0576px;
     color: #000;
   }
-  /* Используем существующий .continue-btn, но переопределяем позицию для корзины */
+  /* Кнопка "Продовжити" в корзине — позиционирована абсолютно внутри
+     .cart-summary, прибита к низу с отступом 116px (под FAB-нав).
+     По Figma bottom=116, height=48. */
   .cart-summary .continue-btn {
-    position: static;
-    width: 100%;
+    position: absolute;
+    left: 16px; right: 16px;
+    bottom: 116px;
+    width: auto;
     height: 48px;
     border-radius: 16px;
     background: linear-gradient(to right, #3083ff 0%, #306aff 100%);
@@ -1756,17 +1792,29 @@
   }
   .cart-summary .continue-btn:active { transform: scale(0.985); opacity: 0.92; }
 
-  /* Плавающий нав-бар: левая FAB Банк, центральная пилюля,
-     правая FAB Базар. Лежит поверх .cart-summary, прибит к низу. */
+  /* Подложка под таббаром — белый градиент-fade transparent → white,
+     лежит над summary, под нав-баром. По Figma height=96px от низа. */
+  .cart-tabbar-fade {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 96px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #fff 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Плавающий нав-бар: FAB Банк слева, пилюля по центру, FAB Базар справа.
+     Лежит поверх fade-подложки и summary-блока. */
   .cart-nav {
     position: absolute;
     left: 16px; right: 16px;
-    bottom: 24px;
+    bottom: 32px;
     height: 64px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     pointer-events: none;
+    z-index: 2;
   }
   .cart-nav .fab,
   .cart-nav .nav-pill {
@@ -1833,7 +1881,11 @@
     color: #b2b2b2;
   }
   .cart-nav .nav-item.active span { color: #5558e3; }
-  .cart-nav .nav-item .badge {
+  /* Бейдж — внутри active nav-item, но цифра должна оставаться белой
+     (а не наследовать фиолетовый от .nav-item.active span). Используем
+     более специфичный селектор + переопределяем цвет явно. */
+  .cart-nav .nav-item .badge,
+  .cart-nav .nav-item.active .badge {
     position: absolute;
     top: 2px;
     right: 8px;
@@ -1904,7 +1956,7 @@
           <span class="amount">120 000 ₴</span>
         </div>
 
-        <!-- Карточка 1: Миша Logitech / Фокстрот / без знижки -->
+        <!-- Карточка 1: Миша Logitech / Фоксрот / без знижки — 3 999 ₴ -->
         <div class="item-card no-discount" data-id="mouse" data-base-price="3999">
           <div class="radio checked" role="checkbox" aria-checked="true"></div>
           <div class="item-title">Миша Logitech MX Master 3S Performance Wireless</div>
@@ -1913,40 +1965,35 @@
             <img class="brand-logo" src="assets/Foxtrot_logo.png" alt="">
             <span class="brand-name">Фокстрот</span>
           </div>
-          <div class="price-row">
-            <span class="price"><span class="price-num">3 999</span> ₴</span>
-            <div class="qty">
-              <button class="qty-decrease" aria-label="Зменшити"><img src="assets/Delete.svg" alt=""></button>
-              <span class="count">1</span>
-              <button class="qty-increase" aria-label="Збільшити"><img src="assets/Add.svg" alt=""></button>
-            </div>
-            <div class="old-price"></div>
+          <div class="price"><span class="price-num">3 999</span>&nbsp;₴</div>
+          <div class="qty">
+            <button class="qty-decrease" aria-label="Зменшити"><img src="assets/Delete.svg" alt=""></button>
+            <span class="count">1</span>
+            <button class="qty-increase" aria-label="Збільшити"><img src="assets/Add.svg" alt=""></button>
           </div>
         </div>
 
-        <!-- Карточка 2: Ноутбук Asus TUF / KTC / -15% -->
-        <div class="item-card" data-id="laptop1" data-base-price="31199" data-old-base="44999" data-discount="15">
+        <!-- Карточка 2: PlayStation 5 / KTC / -15% — 22 999 ₴ (стара 26 999) -->
+        <div class="item-card" data-id="ps5" data-base-price="22999" data-old-base="26999" data-discount="15">
           <div class="radio checked" role="checkbox" aria-checked="true"></div>
-          <div class="item-title">Ноутбук Asus TUF Gaming F15 FX507ZC4-HN083 Me…</div>
+          <div class="item-title">Ігрова консоль Sony PlayStation 5 Slim Digital Edition</div>
           <div class="item-thumb"><img src="assets/product_cart_1.png" alt=""></div>
           <div class="brand">
             <img class="brand-logo" src="assets/KTC_logo.png" alt="">
             <span class="brand-name">KTC</span>
           </div>
-          <div class="price-row">
-            <span class="price"><span class="price-num">31 199</span> ₴</span>
-            <span class="discount-badge">-15%</span>
-            <div class="qty">
-              <button class="qty-decrease" aria-label="Зменшити"><img src="assets/Delete.svg" alt=""></button>
-              <span class="count">1</span>
-              <button class="qty-increase" aria-label="Збільшити"><img src="assets/Add.svg" alt=""></button>
-            </div>
-            <div class="old-price"><span class="old-num">44 999</span></div>
+          <div class="price"><span class="price-num">22 999</span>&nbsp;₴</div>
+          <div class="discount-badge">-15%</div>
+          <div class="old-price"><span class="old-num">26 999</span></div>
+          <div class="qty">
+            <button class="qty-decrease" aria-label="Зменшити"><img src="assets/Delete.svg" alt=""></button>
+            <span class="count">1</span>
+            <button class="qty-increase" aria-label="Збільшити"><img src="assets/Add.svg" alt=""></button>
           </div>
         </div>
 
-        <!-- Карточка 3: Ноутбук Asus TUF / KTC / -15% -->
-        <div class="item-card" data-id="laptop2" data-base-price="31199" data-old-base="44999" data-discount="15">
+        <!-- Карточка 3: Ноутбук Asus TUF / KTC / -15% — 31 199 ₴ (стара 44 999) -->
+        <div class="item-card" data-id="laptop" data-base-price="31199" data-old-base="44999" data-discount="15">
           <div class="radio checked" role="checkbox" aria-checked="true"></div>
           <div class="item-title">Ноутбук Asus TUF Gaming F15 FX507ZC4-HN083 Me…</div>
           <div class="item-thumb"><img src="assets/product_cart_2.png" alt=""></div>
@@ -1954,15 +2001,13 @@
             <img class="brand-logo" src="assets/KTC_logo.png" alt="">
             <span class="brand-name">KTC</span>
           </div>
-          <div class="price-row">
-            <span class="price"><span class="price-num">31 199</span> ₴</span>
-            <span class="discount-badge">-15%</span>
-            <div class="qty">
-              <button class="qty-decrease" aria-label="Зменшити"><img src="assets/Delete.svg" alt=""></button>
-              <span class="count">1</span>
-              <button class="qty-increase" aria-label="Збільшити"><img src="assets/Add.svg" alt=""></button>
-            </div>
-            <div class="old-price"><span class="old-num">44 999</span></div>
+          <div class="price"><span class="price-num">31 199</span>&nbsp;₴</div>
+          <div class="discount-badge">-15%</div>
+          <div class="old-price"><span class="old-num">44 999</span></div>
+          <div class="qty">
+            <button class="qty-decrease" aria-label="Зменшити"><img src="assets/Delete.svg" alt=""></button>
+            <span class="count">1</span>
+            <button class="qty-increase" aria-label="Збільшити"><img src="assets/Add.svg" alt=""></button>
           </div>
         </div>
 
@@ -1977,10 +2022,13 @@
               <span class="main">Вибрати всі</span>
               <span class="sub" id="selectedCountText">Обрано 3 товари</span>
             </div>
-            <div class="cart-total"><span id="cartTotalAmount">66 397</span> ₴</div>
+            <div class="cart-total"><span id="cartTotalAmount">58 197</span> ₴</div>
           </div>
           <button class="continue-btn" id="cartContinueBtn">Продовжити</button>
         </div>
+
+        <!-- Подложка под таббаром: белый fade transparent → white -->
+        <div class="cart-tabbar-fade"></div>
 
         <!-- Плавающий нав-бар -->
         <div class="cart-nav">
@@ -2035,7 +2083,7 @@
           <span>Редагувати</span>
         </div>
         <div class="qty" id="cartQty">3 товари</div>
-        <div class="price" id="cartPrice">85 198 ₴</div>
+        <div class="price" id="cartPrice">58 197 ₴</div>
         <div class="products">
           <div class="product"><img src="assets/product_cart_1.png" alt=""></div>
           <div class="product"><img src="assets/product_cart_2.png" alt=""></div>
@@ -2406,9 +2454,9 @@
           card.classList.remove('state-pickup');
           card.classList.remove('state-pickup-selected');
           document.getElementById('continueBtn').classList.remove('disabled');
-          // Возвращаем мышь Фокстрот в кошик: 2 товари → 3 товари, +4999
+          // Возвращаем мышь Фокстрот в кошик: 2 товари → 3 товари, +3999
           document.getElementById('cartQty').textContent = '3 товари';
-          document.getElementById('cartPrice').textContent = '85 198 ₴';
+          document.getElementById('cartPrice').textContent = '58 197 ₴';
           const fox = document.getElementById('cartFoxtrotProduct');
           if (fox) fox.style.display = '';
           // Сбрасываем подпись кнопки выбора магазина
@@ -2439,26 +2487,26 @@
   // переключаем карточку доставки в стейт pickup (мерчант KTC, для которого
   // самовивіз доступен), активируем сегмент "Самовивіз", блокируем "Продовжити"
   // (адрес магазина ещё не выбран).
-  // Также обновляется кошик: 3 товари → 2 товари, цена -4999 (мышка Logitech),
-  // и из ряда миниатюр пропадает PNG мыши.
-  pickupModal.querySelector('.sheet-primary-btn').addEventListener('click', () => {
-    closePickupModal();
-    const deliveryCard = document.getElementById('deliveryCard');
-    // Снимаем стейт курьера (если был), ставим pickup
-    deliveryCard.classList.remove('state-courier');
-    deliveryCard.classList.add('state-pickup');
-    // Активируем "Самовивіз" в сегменте delivery-card
-    const segment = deliveryCard.querySelector('.segment-2');
-    segment.querySelectorAll('.seg').forEach(b => b.classList.remove('active'));
-    segment.querySelector('[data-seg="delivery-pickup"]').classList.add('active');
-    // Блокируем "Продовжити"
-    document.getElementById('continueBtn').classList.add('disabled');
-    // Обновляем кошик: убираем товар Фокстрот (мышка)
-    document.getElementById('cartQty').textContent = '2 товари';
-    document.getElementById('cartPrice').textContent = '80 199 ₴';
-    const fox = document.getElementById('cartFoxtrotProduct');
-    if (fox) fox.style.display = 'none';
-  });
+    // Также обновляется кошик: 3 товари → 2 товари, цена -3999 (мышка Logitech),
+    // и из ряда миниатюр пропадает PNG мыши.
+    pickupModal.querySelector('.sheet-primary-btn').addEventListener('click', () => {
+      closePickupModal();
+      const deliveryCard = document.getElementById('deliveryCard');
+      // Снимаем стейт курьера (если был), ставим pickup
+      deliveryCard.classList.remove('state-courier');
+      deliveryCard.classList.add('state-pickup');
+      // Активируем "Самовивіз" в сегменте delivery-card
+      const segment = deliveryCard.querySelector('.segment-2');
+      segment.querySelectorAll('.seg').forEach(b => b.classList.remove('active'));
+      segment.querySelector('[data-seg="delivery-pickup"]').classList.add('active');
+      // Блокируем "Продовжити"
+      document.getElementById('continueBtn').classList.add('disabled');
+      // Обновляем кошик: убираем товар Фокстрот (мышка)
+      document.getElementById('cartQty').textContent = '2 товари';
+      document.getElementById('cartPrice').textContent = '54 198 ₴';
+      const fox = document.getElementById('cartFoxtrotProduct');
+      if (fox) fox.style.display = 'none';
+    });
 
   // ===== Радио-выбор опций доставки =====
   // Кроме выделения опции, переключаем стейт всей карточки доставки —
