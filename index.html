@@ -2561,18 +2561,20 @@
      - Белый хедер 136px со статусбаром, back-кнопкой, заголовком и датой
      - Скроллящийся список из 4 карточек: статус+товары / получение /
        оплата / действия
+     - Все разделители ВНУТРИ карточек — линии с отступами 16px от краёв
+       (left: 16px; right: 16px), не на полную ширину карточки.
      ====================================================================== */
   .details-screen {
     background: #f4f4f4;
   }
 
-  /* Хедер: статичный белый блок 136px (как в pickup/np-screen) */
+  /* Хедер: статичный блок 136px поверх фона */
   .details-header {
     position: absolute;
     left: 0; top: 0;
     width: 375px;
     height: 136px;
-    background: #f4f4f4;          /* такой же как фон, без выделения */
+    background: #f4f4f4;
     z-index: 30;
   }
   .details-header .back-btn {
@@ -2606,7 +2608,7 @@
     color: #808080;
   }
 
-  /* Статусбар на details: чёрные иконки на белом (как в pickup/np) */
+  /* Статусбар на details: чёрные иконки на сером фоне */
   .details-screen .status-bar {
     position: absolute;
     left: 0; top: 0;
@@ -2632,10 +2634,11 @@
   .details-screen .status-bar .icons img {
     height: 12px;
     display: block;
-    filter: invert(1);   /* белые SVG → чёрные на белом фоне */
+    filter: invert(1);
   }
 
-  /* Скроллящийся контейнер под хедером */
+  /* Скроллящийся контейнер под хедером.
+     gap: 16px между карточками. */
   .details-list {
     position: absolute;
     inset: 0;
@@ -2643,13 +2646,13 @@
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     z-index: 10;
-    padding: 152px 0 40px 0;     /* 136 хедер + 16 воздуха */
+    padding: 152px 0 40px 0;
     display: flex;
     flex-direction: column;
     gap: 16px;
   }
 
-  /* Общий стиль карточек на details */
+  /* Общий стиль карточек на details — белый фон со скруглением 16. */
   .details-list .details-card {
     position: relative;
     margin: 0 16px;
@@ -2657,97 +2660,96 @@
     border-radius: 16px;
   }
 
-  /* === Карточка 1: Статус + товары === */
-  .details-status-card {
-    /* высота динамическая — определяется по содержимому */
+  /* Универсальный сепаратор внутри карточки.
+     Использование: <div class="details-sep"></div> между секциями.
+     Линия 1px серая с отступами 16px от обоих краёв карточки. */
+  .details-sep {
+    position: relative;
+    height: 1px;
+    margin: 0 16px;
+    background: rgba(0, 0, 0, 0.06);
   }
-  .details-status-card .status-icon {
+
+  /* === Карточка статуса (статус-блок + N товаров с разделителями) === */
+  /* По Figma карточка фиксированная 280px (статус + 2 товара),
+     но мы делаем поточно — высота определяется содержимым. */
+
+  /* Заголовочный статус-блок: иконка слева, тексты в центре, chevron справа */
+  .details-status-block {
+    position: relative;
+    height: 72px;             /* y=180..212 в Figma + воздух → ровно 72 */
+    padding: 20px 56px 20px 64px;  /* 64 для иконки, 56 для chevron */
+  }
+  .details-status-block .status-icon {
     position: absolute;
     left: 16px; top: 20px;
     width: 32px; height: 32px;
   }
-  .details-status-card .status-icon img { width: 32px; height: 32px; display: block; }
-  .details-status-card .status-name {
-    position: absolute;
-    left: 64px; top: 18px;
-    height: 20px;
+  .details-status-block .status-icon img {
+    width: 32px; height: 32px;
+    display: block;
+  }
+  .details-status-block .status-name {
+    /* по Figma y=176, но это от верха экрана; внутри карточки top=160 → 16px от верха карточки */
+    margin: 0;
     font-weight: 600;
     font-size: 16px;
     line-height: 20px;
     color: #000;
   }
-  .details-status-card .status-eta {
-    position: absolute;
-    left: 64px; top: 40px;
-    height: 16px;
+  .details-status-block .status-eta {
+    margin: 4px 0 0 0;
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
     color: #808080;
   }
-  .details-status-card .status-chevron {
+  /* Chevron-right из существующего ассета */
+  .details-status-block .status-chevron {
     position: absolute;
     right: 16px; top: 24px;
     width: 24px; height: 24px;
   }
-  .details-status-card .status-chevron::before {
-    content: '';
-    position: absolute;
-    left: 9px; top: 6px;
-    width: 8px; height: 12px;
-    border-right: 1.6px solid #c4c4c4;
-    border-top: 1.6px solid #c4c4c4;
-    transform: rotate(45deg);
-    transform-origin: center;
-    /* chevron-right через бордеры — без SVG */
+  .details-status-block .status-chevron img {
+    width: 24px; height: 24px;
+    display: block;
   }
-  /* Товар в карточке статуса */
-  .details-status-card .item-row {
+
+  /* Товар внутри карточки статуса.
+     Figma: на y=248 миниатюра 64×64 (right: 16), title (y=248, h=40),
+     price (y=296, h=24). Высота строки = 88px (16 padding + 64 контент + 8 padding). */
+  .details-item-row {
     position: relative;
-    margin: 0 16px;
-    padding: 16px 0;
+    padding: 16px 16px;
     height: 96px;
   }
-  .details-status-card .item-row + .item-row {
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-  }
-  .details-status-card .item-row:first-of-type {
-    margin-top: 16px;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    padding-top: 16px;
-  }
-  .details-status-card .item-row .item-thumb {
+  .details-item-row .item-thumb {
     position: absolute;
-    right: 0; top: 16px;
+    right: 16px; top: 16px;
     width: 64px; height: 64px;
     border-radius: 8px;
     overflow: hidden;
-    background: #fff;
   }
-  .details-status-card .item-row .item-thumb img {
+  .details-item-row .item-thumb img {
     width: 64px; height: 64px;
     object-fit: contain;
     display: block;
   }
-  .details-status-card .item-row .item-name {
-    position: absolute;
-    left: 0; top: 16px;
+  .details-item-row .item-name {
+    margin: 0;
     width: 211px;
     height: 40px;
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
     color: #000;
-    /* обрезаем 2 строки */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .details-status-card .item-row .item-price {
-    position: absolute;
-    left: 0; top: 60px;
-    height: 24px;
+  .details-item-row .item-price {
+    margin: 4px 0 0 0;
     font-weight: 700;
     font-size: 18px;
     line-height: 24px;
@@ -2755,14 +2757,13 @@
     color: #000;
   }
 
-  /* === Универсальная "info-row" для остальных карточек:
-     серый caption сверху, чёрный value снизу. Использует поток c gap. === */
+  /* === info-row для остальных карточек ===
+     caption (серый 14/500) над value (чёрный 16/600).
+     Если в блоке несколько value (как адрес+время работы), они идут как
+     поток внутри одного info-row, а не как отдельные блоки. */
   .details-info-row {
     position: relative;
     padding: 16px 16px;
-  }
-  .details-info-row + .details-info-row {
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
   }
   .details-info-row .caption {
     font-weight: 500;
@@ -2776,6 +2777,15 @@
     font-size: 16px;
     line-height: 24px;
     color: #000;
+  }
+  /* Внутри одного info-row может быть второй "caption" (например время
+     работы магазина под адресом). Серый 14/600 с отступом сверху. */
+  .details-info-row .sub-caption {
+    margin-top: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: #808080;
   }
   /* Иконка справа в info-row (для продавца, оплаты) */
   .details-info-row .row-trail {
@@ -2793,7 +2803,7 @@
   .details-info-row .row-trail.size-24 { width: 24px; height: 24px; }
   .details-info-row .row-trail.size-24 img { max-width: 24px; max-height: 24px; }
 
-  /* === Карточка действий внизу === */
+  /* === Карточка действий: "Скасувати замовлення", "Поставити запитання" === */
   .details-actions-card .action-row {
     position: relative;
     padding: 16px 16px 16px 56px;
@@ -2805,9 +2815,6 @@
     line-height: 20px;
     color: #000;
   }
-  .details-actions-card .action-row + .action-row {
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-  }
   .details-actions-card .action-row .action-icon {
     position: absolute;
     left: 16px; top: 50%;
@@ -2815,7 +2822,7 @@
     width: 24px; height: 24px;
     display: flex; align-items: center; justify-content: center;
   }
-  /* Иконка "Скасувати замовлення" — синий круг с белым ✕ */
+  /* "Скасувати замовлення" — синий круг с белым ✕ */
   .action-icon.cancel-icon {
     background: #306eff;
     border-radius: 50%;
@@ -2827,7 +2834,7 @@
     font-weight: 600;
     line-height: 1;
   }
-  /* Иконка "Поставити запитання" — синий круг с message */
+  /* "Поставити запитання" — синий круг с message */
   .action-icon.chat-icon {
     background: #306eff;
     border-radius: 50%;
@@ -3574,31 +3581,37 @@
       <!-- Скроллящийся список карточек -->
       <div class="details-list">
 
-        <!-- Карточка 1: Статус "Готується до видачі" + товары -->
-        <div class="details-card details-status-card">
-          <!-- Кликабельная зона со статусом -->
-          <div style="position: relative; height: 72px;">
+        <!-- Карточка 1: Статус "Готується до видачі" + товары
+             Структура: status-block → sep → item-row → sep → item-row -->
+        <div class="details-card">
+          <div class="details-status-block">
             <div class="status-icon">
               <img src="assets/Status_waiting.svg" alt="">
             </div>
             <div class="status-name">Готується до видачі</div>
             <div class="status-eta">Сьогодні після 17:00</div>
-            <div class="status-chevron"></div>
+            <div class="status-chevron">
+              <img src="assets/Chevron_Right_MD.svg" alt="">
+            </div>
           </div>
-          <!-- Список товаров (для самовывоза = 2 штуки: ноут + PS5) -->
-          <div class="item-row">
+          <div class="details-sep"></div>
+          <div class="details-item-row">
             <div class="item-thumb"><img src="assets/product_cart_2.png" alt=""></div>
             <div class="item-name">Ноутбук Asus TUF Gaming F15 FX507ZC4-HN083 Mecha Gray</div>
             <div class="item-price">31 199 ₴</div>
           </div>
-          <div class="item-row">
+          <div class="details-sep"></div>
+          <div class="details-item-row">
             <div class="item-thumb"><img src="assets/product_cart_1.png" alt=""></div>
             <div class="item-name">Ігрова приставка Sony PlayStation 5 Slim Digital Edition</div>
             <div class="item-price">22 999 ₴</div>
           </div>
         </div>
 
-        <!-- Карточка 2: продавець, адреса, час, отримувач, телефон -->
+        <!-- Карточка 2: Продавець / Самовивіз+время / Одержувач / Телефон.
+             По Figma время работы магазина "з 10:00 до 21:00" — это часть
+             адресного блока (тот же info-row, sub-caption под value), а не
+             отдельный блок с разделителем. -->
         <div class="details-card">
           <div class="details-info-row">
             <div class="caption">Продавець</div>
@@ -3607,17 +3620,18 @@
               <img src="assets/KTC_logo.png" alt="" style="border-radius:50%;width:32px;height:32px;">
             </div>
           </div>
+          <div class="details-sep"></div>
           <div class="details-info-row">
             <div class="caption">Самовивіз з магазину</div>
             <div class="value">вул. Пантелеймонівська 88/1а,<br>(ТРЦ Fontan Sky)</div>
+            <div class="sub-caption">з 10:00 до 21:00</div>
           </div>
-          <div class="details-info-row">
-            <div class="caption">з 10:00 до 21:00</div>
-          </div>
+          <div class="details-sep"></div>
           <div class="details-info-row">
             <div class="caption">Одержувач</div>
             <div class="value">Новіков Микола</div>
           </div>
+          <div class="details-sep"></div>
           <div class="details-info-row">
             <div class="caption">Телефон одержувача</div>
             <div class="value">+380 (95) 123 45 67</div>
@@ -3635,12 +3649,14 @@
           </div>
         </div>
 
-        <!-- Карточка 4: действия (отмена, вопрос) -->
+        <!-- Карточка 4: действия (отмена, вопрос).
+             Между ними — sep с такими же отступами 16px. -->
         <div class="details-card details-actions-card">
           <div class="action-row" id="cancelOrderRow">
             <div class="action-icon cancel-icon"></div>
             <span>Скасувати замовлення</span>
           </div>
+          <div class="details-sep"></div>
           <div class="action-row" id="askQuestionRow">
             <div class="action-icon chat-icon"></div>
             <span>Поставити запитання</span>
