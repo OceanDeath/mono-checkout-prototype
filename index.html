@@ -2140,6 +2140,216 @@
     z-index: 31;
   }
 
+  /* ======================================================================
+     Модал «Підтвердіть оплату» (figma 6336:7909, 6336:8035 — sheet)
+     - Открывается поверх чекаута по клику на активную "Продовжити"
+     - Затемнение 60% black, sheet 440px высотой выезжает снизу
+     - Структура: drag-handle, header (title + Згорнути), 2 карты на выбор,
+       info-строка, кнопка "Сплатити повністю: X ₴"
+     ====================================================================== */
+  .payment-modal {
+    position: absolute;
+    inset: 0;
+    z-index: 110;        /* выше других модалок чекаута */
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .payment-modal.open {
+    pointer-events: auto;
+    opacity: 1;
+  }
+  .payment-modal .backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+  }
+  .payment-sheet {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 440px;
+    background: #f4f4f4;
+    border-radius: 24px 24px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(.2,.7,.2,1);
+  }
+  .payment-modal.open .payment-sheet {
+    transform: translateY(0);
+  }
+
+  /* Drag handle */
+  .payment-sheet .drag-handle {
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    transform: translateX(-50%);
+    width: 48px;
+    height: 4px;
+    border-radius: 2px;
+    background: #d1d1d6;
+    cursor: pointer;
+  }
+
+  /* Header: title + Згорнути */
+  .payment-sheet .sheet-header {
+    position: absolute;
+    left: 16px; right: 16px;
+    top: 28px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .payment-sheet .sheet-title {
+    font-family: 'SF Pro Display', 'SF Pro Text', -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: 0.38px;
+    color: #000;
+    margin: 0;
+  }
+  .payment-sheet .collapse-btn {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    font-family: 'SF Pro Display', 'SF Pro Text', -apple-system, sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0.33px;
+    color: #306eff;
+  }
+
+  /* Контейнер карт — поток сверху-вниз с зазором */
+  .payment-sheet .cards-list {
+    position: absolute;
+    left: 16px; right: 16px;
+    top: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  /* Карточка выбора способа оплаты */
+  .payment-card {
+    position: relative;
+    height: 88px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    cursor: pointer;
+  }
+  .payment-card .card-icon {
+    position: absolute;
+    left: 16px; top: 24px;
+    width: 56px;
+    height: 40px;
+    display: block;
+  }
+  .payment-card .card-name {
+    position: absolute;
+    left: 88px; top: 24px;
+    height: 24px;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.0512px;
+    color: #000;
+  }
+  .payment-card .card-balance {
+    position: absolute;
+    left: 88px; top: 48px;
+    height: 16px;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    letter-spacing: -0.154px;
+    color: #808080;
+  }
+  /* Радио справа */
+  .payment-card .radio {
+    position: absolute;
+    right: 16px; top: 32px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 0.5px solid #ccc;
+    background: #fff;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .payment-card.selected .radio {
+    background: #306eff;
+    border-color: #306eff;
+  }
+  /* Внутренняя точка-галочка для selected */
+  .payment-card.selected .radio::after {
+    content: '';
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px; height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Info-строка (info_small + текст) */
+  .payment-sheet .info-row {
+    position: absolute;
+    left: 16px; right: 16px;
+    bottom: 124px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .payment-sheet .info-row .info-icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+    flex-shrink: 0;
+  }
+  .payment-sheet .info-row .info-text {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 16px;
+    color: #808080;
+  }
+
+  /* Кнопка "Сплатити повністю" */
+  .payment-sheet .pay-btn {
+    position: absolute;
+    left: 16px; right: 16px;
+    bottom: 40px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(to right, #3083ff 0%, #306aff 100%);
+    border: 0;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 56px;
+    letter-spacing: -0.0512px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.08s ease, opacity 0.15s ease;
+  }
+  .payment-sheet .pay-btn:active { transform: scale(0.985); opacity: 0.92; }
+
+  /* Home indicator на sheet */
+  .payment-sheet .sheet-home-indicator {
+    position: absolute;
+    left: 50%;
+    bottom: 8px;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: #000;
+    border-radius: 100px;
+  }
+
 </style>
 </head>
 <body>
@@ -2515,6 +2725,44 @@
       </div>
     </div>
 
+    <!-- ====== Модал «Підтвердіть оплату» (figma 6336:7909, 6336:8035) ======
+         Открывается по клику на активную "Продовжити" в чекауте.
+         Sheet 440px поверх backdrop 60% black. Внутри: drag-handle, header с
+         тайтлом и "Згорнути", две карточки выбора, info-строка, синяя кнопка
+         "Сплатити повністю". Сумма берётся из cart-total = 58 197 ₴. -->
+    <div class="payment-modal" id="paymentModal">
+      <div class="backdrop"></div>
+      <div class="payment-sheet">
+        <div class="drag-handle"></div>
+        <div class="sheet-header">
+          <h2 class="sheet-title">Підтвердіть оплату</h2>
+          <button class="collapse-btn" id="paymentCollapseBtn">Згорнути</button>
+        </div>
+        <div class="cards-list">
+          <!-- Чорна картка — выбрана по дефолту (mono mastercard mini-card) -->
+          <div class="payment-card selected" data-card="black">
+            <img class="card-icon" src="assets/black_card_mc_small.svg" alt="">
+            <div class="card-name">Чорна картка</div>
+            <div class="card-balance">50 450.25 ₴</div>
+            <div class="radio"></div>
+          </div>
+          <!-- Біла картка — не выбрана (visa) -->
+          <div class="payment-card" data-card="white">
+            <img class="card-icon" src="assets/white_card_visa_small.svg" alt="">
+            <div class="card-name">Біла картка</div>
+            <div class="card-balance">29 191.87 ₴</div>
+            <div class="radio"></div>
+          </div>
+        </div>
+        <div class="info-row">
+          <img class="info-icon" src="assets/info_small.svg" alt="">
+          <span class="info-text">Зведена платіжна інструкція оплати</span>
+        </div>
+        <button class="pay-btn" id="payFullBtn">Сплатити повністю: 58 197 ₴</button>
+        <div class="sheet-home-indicator"></div>
+      </div>
+    </div>
+
     </div><!-- /.checkout-screen -->
 
     <!-- ====== Экран «Самовивіз з магазину» ====== -->
@@ -2874,9 +3122,36 @@
     });
   });
 
-  // ===== Кнопка "Продовжити" — заглушка под прототип =====
-  document.querySelector('.checkout-screen .continue-btn').addEventListener('click', () => {
-    console.log('continue');
+  // ===== Модал "Підтвердіть оплату" =====
+  // Открывается по клику на активную "Продовжити" (когда .disabled нет).
+  // Закрывается по: backdrop, drag-handle, "Згорнути".
+  // Карточки оплаты: клик переключает selected (взаимоисключающие).
+  // "Сплатити повністю" — пока заглушка, на будущее экран успеха.
+  const paymentModal = document.getElementById('paymentModal');
+  function openPaymentModal()  { paymentModal.classList.add('open'); }
+  function closePaymentModal() { paymentModal.classList.remove('open'); }
+
+  document.querySelector('.checkout-screen .continue-btn').addEventListener('click', (e) => {
+    // Если кнопка в disabled-стейте (адрес не выбран) — не открываем
+    if (e.currentTarget.classList.contains('disabled')) return;
+    openPaymentModal();
+  });
+  paymentModal.querySelector('.backdrop').addEventListener('click', closePaymentModal);
+  paymentModal.querySelector('.drag-handle').addEventListener('click', closePaymentModal);
+  document.getElementById('paymentCollapseBtn').addEventListener('click', closePaymentModal);
+
+  // Выбор карты — переключение .selected между .payment-card
+  paymentModal.querySelectorAll('.payment-card').forEach(card => {
+    card.addEventListener('click', () => {
+      paymentModal.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    });
+  });
+
+  // "Сплатити повністю" — заглушка под финальный экран
+  document.getElementById('payFullBtn').addEventListener('click', () => {
+    console.log('pay full clicked');
+    closePaymentModal();
   });
 
   // ===== Back в чекауте → возврат в корзину =====
