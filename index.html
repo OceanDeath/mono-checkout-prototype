@@ -2085,16 +2085,19 @@
     align-items: center;
     justify-content: center;
   }
-  .np-item .icon-square img {
-    width: 22px;
-    height: 22px;
+  /* Содержимое серого квадрата 40×40 — иконка занимает 24×24 (по Figma 20×20,
+     но для SVG-пиктограмм с тонкими линиями 24px смотрится точнее).
+     Поддерживаем три варианта: <img> (PNG/SVG-файл), <svg class="np-icon"> со
+     спрайтом, или generic <svg>. */
+  .np-item .icon-square img,
+  .np-item .icon-square .np-icon,
+  .np-item .icon-square > svg {
+    width: 24px;
+    height: 24px;
     display: block;
-    object-fit: contain;
   }
-  .np-item .icon-square svg {
-    width: 22px;
-    height: 22px;
-    display: block;
+  .np-item .icon-square img {
+    object-fit: contain;
   }
   /* Тело карточки (название, адрес) — справа от иконки */
   .np-item .body {
@@ -2155,6 +2158,56 @@
 </style>
 </head>
 <body>
+  <!-- ====== SVG sprite: иконки для NP-экрана =======================
+       Один скрытый SVG с тремя <symbol> определениями. Использование в карточках:
+       <svg class="np-icon"><use href="#np-icon-box"/></svg>
+       Иконки: посылка (коробка), поштомат, грузовик. Все в стиле плоских
+       цветных пиктограмм, viewBox 24×24. =================================== -->
+  <svg width="0" height="0" style="position:absolute;" aria-hidden="true">
+    <defs>
+      <!-- Посылка (картонная коробка-аксонометрия с лентой) -->
+      <symbol id="np-icon-box" viewBox="0 0 24 24">
+        <!-- передняя грань -->
+        <path d="M3.5 8.5 L12 12 L12 21 L3.5 17.5 Z" fill="#C99B6E" stroke="#8A6644" stroke-width="0.6" stroke-linejoin="round"/>
+        <!-- правая грань -->
+        <path d="M20.5 8.5 L12 12 L12 21 L20.5 17.5 Z" fill="#B8895C" stroke="#8A6644" stroke-width="0.6" stroke-linejoin="round"/>
+        <!-- верхняя грань -->
+        <path d="M3.5 8.5 L12 5 L20.5 8.5 L12 12 Z" fill="#D4AB7E" stroke="#8A6644" stroke-width="0.6" stroke-linejoin="round"/>
+        <!-- разделитель верхней грани -->
+        <path d="M7.75 6.75 L16.25 10.25" stroke="#8A6644" stroke-width="0.5" opacity="0.5"/>
+      </symbol>
+
+      <!-- Поштомат / почтовый ящик с поднятым флажком -->
+      <symbol id="np-icon-postbox" viewBox="0 0 24 24">
+        <!-- стойка -->
+        <rect x="11" y="14" width="2" height="7" fill="#5B5B5B"/>
+        <!-- корпус ящика -->
+        <path d="M4 8 Q4 6 6 6 L13 6 Q15 6 15 8 L15 14 L4 14 Z" fill="#3B6FA7" stroke="#274E7C" stroke-width="0.6" stroke-linejoin="round"/>
+        <!-- щель -->
+        <rect x="5.5" y="8.5" width="6.5" height="0.8" rx="0.4" fill="#1F2D40"/>
+        <!-- флажок -->
+        <path d="M15 6 L15 11 L19 9.5 Z" fill="#E63946" stroke="#B22232" stroke-width="0.5" stroke-linejoin="round"/>
+        <!-- штанга флажка -->
+        <line x1="15" y1="6" x2="15" y2="14" stroke="#274E7C" stroke-width="0.6"/>
+      </symbol>
+
+      <!-- Грузовик доставки -->
+      <symbol id="np-icon-truck" viewBox="0 0 24 24">
+        <!-- кабина+кузов: задний бокс -->
+        <rect x="2" y="9" width="10" height="8" rx="0.8" fill="#E63946" stroke="#B22232" stroke-width="0.6"/>
+        <!-- кузов -->
+        <path d="M12 11 H17 L20 14 V17 H12 Z" fill="#F4F4F4" stroke="#999" stroke-width="0.6" stroke-linejoin="round"/>
+        <!-- окно кабины -->
+        <rect x="13" y="12" width="3" height="2" fill="#A8D5EE"/>
+        <!-- колёса -->
+        <circle cx="6.5" cy="18" r="1.7" fill="#1B1B1B"/>
+        <circle cx="6.5" cy="18" r="0.7" fill="#666"/>
+        <circle cx="16" cy="18" r="1.7" fill="#1B1B1B"/>
+        <circle cx="16" cy="18" r="0.7" fill="#666"/>
+      </symbol>
+    </defs>
+  </svg>
+
   <div class="device">
     <!-- физические кнопки сбоку (визуальные) -->
     <div class="device-btn btn-mute"></div>
@@ -2692,7 +2745,7 @@
         <!-- Останні: Відділення №27 (до 30 кг — обычная посылка) -->
         <div class="np-item" data-addr="Відділення №27, вул. Пироговський шлях, 136" data-line2="">
           <div class="icon-square">
-            <img src="assets/Box.png" alt="">
+            <svg class="np-icon"><use href="#np-icon-box"/></svg>
           </div>
           <div class="body">
             <div class="name">Відділення №27</div>
@@ -2704,7 +2757,7 @@
         <!-- Останні: Поштомат №28277 (до 20 кг) -->
         <div class="np-item" data-addr="Поштомат №28277, вул. Федорова, 32 (м. Олімпійська)" data-line2="">
           <div class="icon-square">
-            <img src="assets/Post.png" alt="">
+            <svg class="np-icon"><use href="#np-icon-postbox"/></svg>
           </div>
           <div class="body">
             <div class="name">Поштомат №28277</div>
@@ -2719,7 +2772,7 @@
         <!-- Доступні: Відділення №1 (до 1100 кг — грузовое) -->
         <div class="np-item" data-addr="Відділення №1, Київське шосе, 27" data-line2="">
           <div class="icon-square">
-            <img src="assets/Delivery_Car.png" alt="">
+            <svg class="np-icon"><use href="#np-icon-truck"/></svg>
           </div>
           <div class="body">
             <div class="name">Відділення №1</div>
@@ -2731,7 +2784,7 @@
         <!-- Доступні: Відділення №2 (до 1100 кг — грузовое) -->
         <div class="np-item" data-addr="Відділення №2, вул. Базова, 16" data-line2="">
           <div class="icon-square">
-            <img src="assets/Delivery_Car.png" alt="">
+            <svg class="np-icon"><use href="#np-icon-truck"/></svg>
           </div>
           <div class="body">
             <div class="name">Відділення №2</div>
@@ -2743,7 +2796,7 @@
         <!-- Доступні: Відділення №3 (до 30 кг — обычная посылка) -->
         <div class="np-item" data-addr="Відділення №3, вул. Дальницька, 23/4" data-line2="">
           <div class="icon-square">
-            <img src="assets/Box.png" alt="">
+            <svg class="np-icon"><use href="#np-icon-box"/></svg>
           </div>
           <div class="body">
             <div class="name">Відділення №3</div>
@@ -2755,7 +2808,7 @@
         <!-- Доступні: Відділення №4 (до 20 кг — обычная посылка) -->
         <div class="np-item" data-addr="Відділення №4, вул. Федорова, 32 (м. Олімпійська)" data-line2="">
           <div class="icon-square">
-            <img src="assets/Box.png" alt="">
+            <svg class="np-icon"><use href="#np-icon-box"/></svg>
           </div>
           <div class="body">
             <div class="name">Відділення №4</div>
