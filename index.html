@@ -2417,9 +2417,13 @@
 <script>
   // ===== Скролл: при scrollTop > 0 hero-bg сжимается до 0,
   // top-chrome получает тень снизу.
+  // ВАЖНО: querySelector('.scroll-area') без префикса возьмёт первый
+  // .scroll-area в DOM — а с появлением корзины первой стала её scroll-area.
+  // Логика свёртывания шапки относится только к чекауту, поэтому селектор
+  // явно квалифицирован под .checkout-screen.
   const heroBg     = document.getElementById('heroBg');
-  const topChrome  = document.querySelector('.top-chrome');
-  const scrollArea = document.querySelector('.scroll-area');
+  const topChrome  = document.querySelector('.checkout-screen .top-chrome');
+  const scrollArea = document.querySelector('.checkout-screen .scroll-area');
   const SCROLL_THRESHOLD = 8;
   function onScroll() {
     const collapsed = scrollArea.scrollTop > SCROLL_THRESHOLD;
