@@ -2449,7 +2449,7 @@
   .success-screen .order-card .order-count {
     position: absolute;
     left: 16px;
-    top: 20px;
+    top: 28px;
     font-weight: 400;
     font-size: 14px;
     line-height: 16px;
@@ -2459,35 +2459,31 @@
   .success-screen .order-card .order-total {
     position: absolute;
     left: 16px;
-    top: 44px;
+    top: 52px;
     font-weight: 700;
     font-size: 20px;
     line-height: 24px;
     letter-spacing: -0.064px;
     color: #000;
   }
-  /* Миниатюры товаров справа — 3 квадрата 48×48, налезают на 16px */
+  /* Миниатюры товаров справа — квадраты 48×48 в ряд с зазором 8px,
+     без теней (просто белые карточки на белом — не нужны). */
   .success-screen .order-card .order-thumbs {
     position: absolute;
     right: 16px;
-    top: 20px;
+    top: 28px;
     height: 48px;
     display: flex;
     flex-direction: row;
+    gap: 8px;
   }
   .success-screen .order-card .order-thumbs .thumb {
     width: 48px;
     height: 48px;
     background: #fff;
     border-radius: 10px;
-    box-shadow: -2px 0 6px rgba(0, 0, 0, 0.06);
-    margin-left: -8px;            /* чтобы товары налезали один на другой */
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
-  }
-  .success-screen .order-card .order-thumbs .thumb:first-child {
-    margin-left: 0;
-    box-shadow: none;
   }
   .success-screen .order-card .order-thumbs .thumb img {
     width: 40px;
@@ -3231,7 +3227,10 @@
         Очікуйте повідомлення про готовність вашого замовлення
       </div>
 
-      <!-- Карточка: счётчик товаров, сумма, миниатюры, кнопка "Переглянути" -->
+      <!-- Карточка: счётчик товаров, сумма, миниатюры, кнопка "Переглянути".
+           Дефолт — все 3 товара / 58 197 ₴ (доставка НП). Если выбран
+           самовывоз — JS перепишет на 2 товара / 54 198 ₴ и скроет 3-ю
+           миниатюру (Logitech не доступен на самовывоз). -->
       <div class="order-card">
         <div class="order-count">3 товари</div>
         <div class="order-total">58 197 ₴</div>
@@ -3403,14 +3402,31 @@
   });
 
   // "Сплатити повністю" → закрываем модалку, показываем экран успеха.
-  // Небольшая задержка чтобы visual transition модалки успел отыграть.
+  // Перед показом — синхронизируем содержимое order-card на success-экране
+  // с текущим состоянием чекаута (доставка vs самовывоз).
   document.getElementById('payFullBtn').addEventListener('click', () => {
     closePaymentModal();
     setTimeout(() => {
+      syncSuccessOrderCard();
       showScreen('success');
       runConfetti();
     }, 200);
   });
+
+  // Синхронизация order-card success-экрана с состоянием корзины/чекаута.
+  // Читаем текущие qty + сумму из cartQty/cartPrice (на чекауте они уже
+  // обновляются автоматически при переходе в state-pickup — мышь Logitech
+  // оттуда выпадает). Также скрываем третью миниатюру (мышь) в pickup-режиме.
+  function syncSuccessOrderCard() {
+    const qty   = document.getElementById('cartQty').textContent;       // "3 товари" / "2 товари"
+    const price = document.getElementById('cartPrice').textContent;     // "58 197 ₴" / "54 198 ₴"
+    document.querySelector('#successScreen .order-count').textContent = qty;
+    document.querySelector('#successScreen .order-total').textContent = price;
+    // Скрываем 3-ю миниатюру (мышь) если самовывоз — в чекауте мыши нет
+    const isPickup = document.getElementById('deliveryCard').classList.contains('state-pickup');
+    const thumbs = document.querySelectorAll('#successScreen .order-thumbs .thumb');
+    if (thumbs[2]) thumbs[2].style.display = isPickup ? 'none' : 'flex';
+  }
 
   // ===== Кнопки на экране успеха =====
   // "Повернутися на головну" — на этом прототипе нет настоящего "главного"
