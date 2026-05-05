@@ -2558,24 +2558,33 @@
   /* ======================================================================
      Экран «Деталі замовлення» (figma 6343:8230)
      - Светло-серый фон (#f4f4f4)
-     - Белый хедер 136px со статусбаром, back-кнопкой, заголовком и датой
      - Скроллящийся список из 4 карточек: статус+товары / получение /
        оплата / действия
-     - Все разделители ВНУТРИ карточек — линии с отступами 16px от краёв
-       (left: 16px; right: 16px), не на полную ширину карточки.
+     - Шапка: 2 состояния. Развёрнутая — title+date в потоке списка, при
+       скролле уезжают наверх, шапка остаётся пустой (status-bar + back).
+       Свёрнутая (.collapsed): h=96 c тенью + compact-title по центру
+       (figma 6345:8366).
+     - Все разделители ВНУТРИ карточек — линии с отступами 16px от краёв.
      ====================================================================== */
   .details-screen {
     background: #f4f4f4;
   }
 
-  /* Хедер: статичный блок 136px поверх фона */
+  /* Шапка: пустая 96px (только status-bar + back-кнопка + место для compact-title).
+     Большой title и дата теперь внутри scroll-контейнера. */
   .details-header {
     position: absolute;
     left: 0; top: 0;
     width: 375px;
-    height: 136px;
+    height: 96px;
     background: #f4f4f4;
     z-index: 30;
+    transition: box-shadow 0.18s ease;
+  }
+  /* Свёрнутая шапка: тень снизу, compact-title виден.
+     Высота та же (96), фон тот же — отличается только тенью и видимостью title. */
+  .details-header.collapsed {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
   .details-header .back-btn {
     position: absolute;
@@ -2587,28 +2596,27 @@
     width: 24px; height: 24px;
     display: block;
   }
-  .details-header .details-title {
+  /* Compact-title — виден ТОЛЬКО в .collapsed состоянии шапки.
+     16/700 по центру, на y=68 (figma 6345:8474). */
+  .details-header .details-compact-title {
     position: absolute;
-    left: 16px; top: 88px;
-    height: 32px;
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 32px;
-    letter-spacing: -0.36px;
-    color: #000;
-  }
-  .details-header .details-date {
-    position: absolute;
-    left: 16px; top: 120px;
+    left: 0; right: 0; top: 56px;
     height: 24px;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: -0.154px;
-    color: #808080;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0.36px;
+    color: #000;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    pointer-events: none;
+  }
+  .details-header.collapsed .details-compact-title {
+    opacity: 1;
   }
 
-  /* Статусбар на details: чёрные иконки на сером фоне */
+  /* Статусбар на details */
   .details-screen .status-bar {
     position: absolute;
     left: 0; top: 0;
@@ -2637,8 +2645,9 @@
     filter: invert(1);
   }
 
-  /* Скроллящийся контейнер под хедером.
-     gap: 16px между карточками. */
+  /* Скроллящийся контейнер: padding-top 96 (=шапка), большой тайтл и дата
+     — первый элемент потока (а не в шапке), значит при скролле они уедут
+     наверх, и шапка станет collapsed по нашей JS-логике. */
   .details-list {
     position: absolute;
     inset: 0;
@@ -2646,13 +2655,37 @@
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     z-index: 10;
-    padding: 152px 0 40px 0;
+    padding: 96px 0 40px 0;
     display: flex;
     flex-direction: column;
     gap: 16px;
   }
 
-  /* Общий стиль карточек на details — белый фон со скруглением 16. */
+  /* Большой title + дата как первый блок списка (вместо в шапке).
+     Размер и позиция как в figma 6343:8237 (y=88, big 24/700) и 6343:8238 (y=120, 14/500). */
+  .details-headline {
+    margin: 0 16px;            /* такой же отступ как у карточек */
+    padding-top: 8px;          /* небольшой воздух от шапки */
+    padding-bottom: 8px;
+  }
+  .details-headline .details-title {
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: -0.36px;
+    color: #000;
+    margin: 0;
+  }
+  .details-headline .details-date {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.154px;
+    color: #808080;
+    margin: 4px 0 0 0;
+  }
+
+  /* Общий стиль карточек */
   .details-list .details-card {
     position: relative;
     margin: 0 16px;
@@ -2660,9 +2693,7 @@
     border-radius: 16px;
   }
 
-  /* Универсальный сепаратор внутри карточки.
-     Использование: <div class="details-sep"></div> между секциями.
-     Линия 1px серая с отступами 16px от обоих краёв карточки. */
+  /* Сепаратор внутри карточки (1px серая линия с отступом 16px) */
   .details-sep {
     position: relative;
     height: 1px;
@@ -2670,15 +2701,11 @@
     background: rgba(0, 0, 0, 0.06);
   }
 
-  /* === Карточка статуса (статус-блок + N товаров с разделителями) === */
-  /* По Figma карточка фиксированная 280px (статус + 2 товара),
-     но мы делаем поточно — высота определяется содержимым. */
-
-  /* Заголовочный статус-блок: иконка слева, тексты в центре, chevron справа */
+  /* === Статус-блок (header в карточке статуса) === */
   .details-status-block {
     position: relative;
-    height: 72px;             /* y=180..212 в Figma + воздух → ровно 72 */
-    padding: 20px 56px 20px 64px;  /* 64 для иконки, 56 для chevron */
+    height: 72px;
+    padding: 20px 56px 20px 64px;
   }
   .details-status-block .status-icon {
     position: absolute;
@@ -2690,7 +2717,6 @@
     display: block;
   }
   .details-status-block .status-name {
-    /* по Figma y=176, но это от верха экрана; внутри карточки top=160 → 16px от верха карточки */
     margin: 0;
     font-weight: 600;
     font-size: 16px;
@@ -2704,7 +2730,6 @@
     line-height: 20px;
     color: #808080;
   }
-  /* Chevron-right из существующего ассета */
   .details-status-block .status-chevron {
     position: absolute;
     right: 16px; top: 24px;
@@ -2715,9 +2740,7 @@
     display: block;
   }
 
-  /* Товар внутри карточки статуса.
-     Figma: на y=248 миниатюра 64×64 (right: 16), title (y=248, h=40),
-     price (y=296, h=24). Высота строки = 88px (16 padding + 64 контент + 8 padding). */
+  /* Товар внутри карточки статуса. Тайтл теперь Semibold (600), не Medium (500). */
   .details-item-row {
     position: relative;
     padding: 16px 16px;
@@ -2739,7 +2762,7 @@
     margin: 0;
     width: 211px;
     height: 40px;
-    font-weight: 500;
+    font-weight: 600;            /* было 500 — стало 600 (Semibold), как просили */
     font-size: 14px;
     line-height: 20px;
     color: #000;
@@ -2757,37 +2780,37 @@
     color: #000;
   }
 
-  /* === info-row для остальных карточек ===
-     caption (серый 14/500) над value (чёрный 16/600).
-     Если в блоке несколько value (как адрес+время работы), они идут как
-     поток внутри одного info-row, а не как отдельные блоки. */
+  /* === info-row для карточек получения/оплаты ===
+     Поджатые отступы как в чекауте: 12px сверху-снизу вместо 16,
+     зазор между caption и value 0 (плотный по figma). */
   .details-info-row {
     position: relative;
-    padding: 16px 16px;
+    padding: 12px 16px;
   }
   .details-info-row .caption {
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
     color: #808080;
+    margin: 0;
   }
   .details-info-row .value {
-    margin-top: 4px;
+    margin: 0;                   /* плотный стек: caption (h=20) → value (h=24) */
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
     color: #000;
   }
-  /* Внутри одного info-row может быть второй "caption" (например время
-     работы магазина под адресом). Серый 14/600 с отступом сверху. */
+  /* Сабкаптион (например время работы магазина) — серый 14/600, внутри
+     того же info-row под value, с отступом 12px. */
   .details-info-row .sub-caption {
-    margin-top: 12px;
+    margin: 12px 0 0 0;
     font-weight: 600;
     font-size: 14px;
     line-height: 20px;
     color: #808080;
   }
-  /* Иконка справа в info-row (для продавца, оплаты) */
+  /* Иконка справа в info-row */
   .details-info-row .row-trail {
     position: absolute;
     right: 16px; top: 50%;
@@ -2803,7 +2826,7 @@
   .details-info-row .row-trail.size-24 { width: 24px; height: 24px; }
   .details-info-row .row-trail.size-24 img { max-width: 24px; max-height: 24px; }
 
-  /* === Карточка действий: "Скасувати замовлення", "Поставити запитання" === */
+  /* === Карточка действий === */
   .details-actions-card .action-row {
     position: relative;
     padding: 16px 16px 16px 56px;
@@ -2822,7 +2845,6 @@
     width: 24px; height: 24px;
     display: flex; align-items: center; justify-content: center;
   }
-  /* "Скасувати замовлення" — синий круг с белым ✕ */
   .action-icon.cancel-icon {
     background: #306eff;
     border-radius: 50%;
@@ -2834,7 +2856,6 @@
     font-weight: 600;
     line-height: 1;
   }
-  /* "Поставити запитання" — синий круг с message */
   .action-icon.chat-icon {
     background: #306eff;
     border-radius: 50%;
@@ -3561,8 +3582,10 @@
     <!-- ====== Экран «Деталі замовлення» (figma 6343:8230) ====== -->
     <div class="screen details-screen" id="detailsScreen">
 
-      <!-- Хедер: статусбар + back + заголовок + дата -->
-      <div class="details-header">
+      <!-- Хедер: status-bar + back + compact-title (виден только в .collapsed).
+           Большой title и дата живут внутри .details-list (см. ниже) —
+           они скроллятся вместе с контентом и уходят наверх. -->
+      <div class="details-header" id="detailsHeader">
         <div class="status-bar">
           <div class="time">19:12</div>
           <div class="icons">
@@ -3574,12 +3597,19 @@
         <div class="back-btn" id="detailsBackBtn">
           <img src="assets/back_icon_blue.svg" alt="back">
         </div>
-        <div class="details-title">Деталі замовлення</div>
-        <div class="details-date">26 травня, 16:22</div>
+        <div class="details-compact-title">Деталі замовлення</div>
       </div>
 
-      <!-- Скроллящийся список карточек -->
-      <div class="details-list">
+      <!-- Скроллящийся список: первый блок — большой тайтл + дата (когда
+           они уезжают наверх по скроллу, шапка переходит в .collapsed) -->
+      <div class="details-list" id="detailsList">
+
+        <!-- Первый блок: большой заголовок и дата заказа.
+             Это и есть то, что в expanded-стейте видно "в шапке". -->
+        <div class="details-headline">
+          <div class="details-title">Деталі замовлення</div>
+          <div class="details-date">26 травня, 16:22</div>
+        </div>
 
         <!-- Карточка 1: Статус "Готується до видачі" + товары
              Структура: status-block → sep → item-row → sep → item-row -->
@@ -3871,6 +3901,18 @@
     console.log('ask question clicked');
   });
 
+  // ===== Сворачивание шапки details при скролле =====
+  // При скролле details-list > 8px — добавляем .collapsed на шапку:
+  //   - в шапке появляется compact-title по центру
+  //   - тень снизу
+  // Большой title и дата (внутри списка) при этом естественно уезжают
+  // вверх вместе с контентом.
+  const detailsHeader = document.getElementById('detailsHeader');
+  const detailsList   = document.getElementById('detailsList');
+  detailsList.addEventListener('scroll', () => {
+    detailsHeader.classList.toggle('collapsed', detailsList.scrollTop > 8);
+  }, { passive: true });
+
   // ===== Конфети на экране успеха =====
   // Эффект: ~120 цветных частиц вылетают из верхних углов и центра, падают
   // вниз с гравитацией, вращаются, постепенно затухают. На канвасе 375×812.
@@ -4002,6 +4044,10 @@
       const scrollEl = active.querySelector('.scroll-area, .np-list, .pickup-list, .details-list');
       if (scrollEl) scrollEl.scrollTop = 0;
     }
+    // Сбрасываем состояние свёрнутой шапки details при заходе на экран —
+    // иначе остаётся с прошлого визита (тень + compact-title видны до скролла).
+    const dHeader = document.getElementById('detailsHeader');
+    if (dHeader) dHeader.classList.remove('collapsed');
   }
   document.querySelector('.pickup-merchant .pickup-link').addEventListener('click', () => {
     showScreen('pickup');
