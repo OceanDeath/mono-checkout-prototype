@@ -1115,9 +1115,8 @@
   }
   .pickup-city-row .city-edit {
     width: 16px; height: 16px;
-    display: flex; align-items: center; justify-content: center;
+    display: block;
   }
-  .pickup-city-row .city-edit img { width: 16px; height: 16px; display: block; }
   /* Сдвигаем поиск и список вниз когда city picker виден */
   .pickup-screen.from-product .pickup-search { top: 168px; }
   .pickup-screen.from-product .pickup-list { padding-top: 236px; }
@@ -4078,7 +4077,7 @@
         <!-- City picker — виден только при from-product -->
         <div class="pickup-city-row">
           <span class="city-name">м. Одеса</span>
-          <span class="city-edit"><img src="assets/Edit.svg" alt=""></span>
+          <img class="city-edit" src="assets/Edit.svg" alt="">
         </div>
       </div>
 
