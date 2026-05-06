@@ -1104,6 +1104,7 @@
     align-items: center;
     gap: 4px;
     height: 24px;
+    white-space: nowrap;
   }
   .pickup-screen.from-product .pickup-city-row { display: flex; }
   .pickup-city-row .city-name {
@@ -1114,8 +1115,9 @@
   }
   .pickup-city-row .city-edit {
     width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
   }
-  .pickup-city-row .city-edit img { width: 12px; height: 12px; display: block; }
+  .pickup-city-row .city-edit img { width: 16px; height: 16px; display: block; }
   /* Сдвигаем поиск и список вниз когда city picker виден */
   .pickup-screen.from-product .pickup-search { top: 168px; }
   .pickup-screen.from-product .pickup-list { padding-top: 236px; }
