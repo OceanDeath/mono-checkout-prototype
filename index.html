@@ -2871,65 +2871,6 @@
             mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'><path d='M2 1h8a1 1 0 011 1v5a1 1 0 01-1 1H6L3 9.5V8H2a1 1 0 01-1-1V2a1 1 0 011-1z' fill='white' stroke='white' stroke-width='0.6' stroke-linejoin='round'/></svg>") center/contain no-repeat;
   }
 
-  /* === State: Очікує в магазині (details-screen.state-ready) === figma 6352:8604
-     Блок кода для отримання — виден только в state-ready */
-  .details-code-card {
-    display: none;
-  }
-  .details-screen.state-ready .details-code-card {
-    display: block;
-  }
-  .details-code-card .code-header {
-    position: relative;
-    padding: 12px 16px;
-  }
-  .details-code-card .code-header .caption {
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 20px;
-    color: #808080;
-    margin: 0;
-  }
-  .details-code-card .code-header .code-value {
-    margin: 0;
-    font-weight: 700;
-    font-size: 18px;
-    line-height: 24px;
-    letter-spacing: -0.0576px;
-    color: #000;
-  }
-  .details-code-card .code-header .code-info-icon {
-    position: absolute;
-    right: 16px; top: 12px;
-    width: 24px; height: 24px;
-  }
-  .details-code-card .code-header .code-info-icon img {
-    width: 24px; height: 24px;
-    display: block;
-  }
-  .details-code-card .code-warning {
-    margin: 0 16px 16px 16px;
-    background: #f4f4f4;
-    border-radius: 12px;
-    padding: 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  .details-code-card .code-warning .warning-icon {
-    flex-shrink: 0;
-    width: 16px; height: 16px;
-    margin-top: 1px;
-  }
-  .details-code-card .code-warning .warning-text {
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 16px;
-    letter-spacing: -0.0448px;
-    color: #808080;
-    margin: 0;
-  }
-
   /* Home indicator на details */
   .details-screen .home-indicator {
     position: absolute;
@@ -3699,21 +3640,6 @@
           </div>
         </div>
 
-        <!-- Карточка «Код для отримання» — видна только в state-ready (figma 6352:8715) -->
-        <div class="details-card details-code-card">
-          <div class="code-header">
-            <div class="caption">Ваш код для отримання</div>
-            <div class="code-value">4 7 8 9 9 1</div>
-            <div class="code-info-icon">
-              <img src="assets/Info_Icon.svg" alt="">
-            </div>
-          </div>
-          <div class="code-warning">
-            <img class="warning-icon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%23F5A623'/%3E%3Ctext x='8' y='12' text-anchor='middle' font-size='11' font-weight='700' fill='white'%3E!%3C/text%3E%3C/svg%3E" alt="">
-            <div class="warning-text">Замовлення можливо отримати в магазині тільки за цим кодом</div>
-          </div>
-        </div>
-
         <!-- Карточка 2: Продавець / Самовивіз+время / Одержувач / Телефон.
              По Figma время работы магазина "з 10:00 до 21:00" — это часть
              адресного блока (тот же info-row, sub-caption под value), а не
@@ -3967,19 +3893,7 @@
   // Back с экрана деталей → возврат на success (или можно cart, но success
   // логичнее — пользователь только что оформил заказ)
   document.getElementById('detailsBackBtn').addEventListener('click', () => {
-    const screen = document.getElementById('detailsScreen');
-    if (screen.classList.contains('state-ready')) {
-      // Возвращаемся к первому стейту — снимаем state-ready и откатываем данные
-      screen.classList.remove('state-ready');
-      const statusBlock = screen.querySelector('.details-status-block');
-      statusBlock.querySelector('.status-icon img').src = 'assets/Status_waiting.svg';
-      statusBlock.querySelector('.status-name').textContent = 'Готується до видачі';
-      statusBlock.querySelector('.status-eta').textContent = 'Сьогодні після 17:00';
-      document.getElementById('detailsList').scrollTop = 0;
-      document.getElementById('detailsHeader').classList.remove('collapsed');
-    } else {
-      showScreen('success');
-    }
+    showScreen('success');
   });
   // Заглушки для кнопок действий внизу details
   document.getElementById('cancelOrderRow').addEventListener('click', () => {
@@ -3987,26 +3901,6 @@
   });
   document.getElementById('askQuestionRow').addEventListener('click', () => {
     console.log('ask question clicked');
-  });
-
-  // ===== Переключение стейта деталей: «Готується до видачі» → «Очікує в магазині» =====
-  // Клик по status-block в первом стейте переключает на state-ready.
-  // В state-ready: другая иконка, другой текст, другие товары/цены,
-  // и появляется карточка с кодом для отримання.
-  const detailsStatusBlock = document.querySelector('#detailsScreen .details-status-block');
-  detailsStatusBlock.style.cursor = 'pointer';
-  detailsStatusBlock.addEventListener('click', () => {
-    const screen = document.getElementById('detailsScreen');
-    if (screen.classList.contains('state-ready')) return; // уже в этом стейте
-    screen.classList.add('state-ready');
-    // Обновляем иконку статуса
-    detailsStatusBlock.querySelector('.status-icon img').src = 'assets/Ready_for_delivery.svg';
-    // Обновляем текст статуса
-    detailsStatusBlock.querySelector('.status-name').textContent = 'Очікує в магазині';
-    detailsStatusBlock.querySelector('.status-eta').innerHTML = '<span style="font-weight:500">Заберіть</span> <span style="font-weight:600">до</span> <span style="font-weight:700">18 березня</span>';
-    // Скроллим наверх
-    document.getElementById('detailsList').scrollTop = 0;
-    document.getElementById('detailsHeader').classList.remove('collapsed');
   });
 
   // ===== Сворачивание шапки details при скролле =====
