@@ -3576,7 +3576,9 @@
         </button>
         <div class="nav-pill">
           <button class="nav-item active" aria-current="page">
-            <img src="assets/market_icon.svg" alt="">
+            <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.0009 0C15.3144 0.000187427 18.0009 2.68641 18.0009 6V6.03906C19.8535 6.22438 21.3571 7.67825 21.5732 9.56348L22.3622 16.4492C22.7022 19.4165 20.3821 22.0183 17.3954 22.0186H6.60637C3.61949 22.0185 1.29857 19.4167 1.6386 16.4492L2.42766 9.56348C2.6437 7.67812 4.14813 6.2242 6.0009 6.03906V6C6.0009 2.68629 8.68719 0 12.0009 0ZM8.0009 9.01855C7.44876 9.01855 7.00113 9.46647 7.0009 10.0186C7.00113 10.5706 7.44876 11.0186 8.0009 11.0186C8.55271 11.0182 9.00067 10.5704 9.0009 10.0186C9.00067 9.46671 8.55271 9.01895 8.0009 9.01855ZM16.0009 9.01855C15.4488 9.01855 15.0011 9.46647 15.0009 10.0186C15.0011 10.5706 15.4488 11.0186 16.0009 11.0186C16.5527 11.0182 17.0007 10.5704 17.0009 10.0186C17.0007 9.46671 16.5527 9.01895 16.0009 9.01855ZM12.0009 2C9.79176 2 8.0009 3.79086 8.0009 6V6.01855H16.0009V6C16.0009 3.79098 14.2099 2.00019 12.0009 2Z" fill="#5558E3"/>
+            </svg>
             <span>Головна</span>
           </button>
           <button class="nav-item">
@@ -3721,7 +3723,7 @@
             <span class="fab-label">Банк</span>
           </button>
           <div class="nav-pill">
-            <button class="nav-item">
+            <button class="nav-item" id="cartHomeTab">
               <img src="assets/market_icon.svg" alt="">
               <span>Головна</span>
             </button>
@@ -5068,6 +5070,11 @@
   // Таб «Кошик» на product screen → корзина
   document.getElementById('productCartTab').addEventListener('click', () => {
     showScreen('cart');
+  });
+
+  // Таб «Головна» на корзині → карточка товара
+  document.getElementById('cartHomeTab').addEventListener('click', () => {
+    showScreen('product');
   });
 
 </script>
