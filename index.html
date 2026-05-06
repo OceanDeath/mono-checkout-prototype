@@ -1093,7 +1093,32 @@
     width: 375px; height: 136px;
     background: #fff;
     z-index: 30;
+    transition: height 0.2s ease;
   }
+  /* Когда pickup открыт из product — шапка выше (160px), город виден */
+  .pickup-screen.from-product .pickup-header { height: 160px; }
+  .pickup-city-row {
+    display: none;
+    position: absolute;
+    left: 16px; top: 120px;
+    align-items: center;
+    gap: 4px;
+    height: 24px;
+  }
+  .pickup-screen.from-product .pickup-city-row { display: flex; }
+  .pickup-city-row .city-name {
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 700; font-size: 16px;
+    line-height: 24px; letter-spacing: 0.36px;
+    color: #306eff;
+  }
+  .pickup-city-row .city-edit {
+    width: 16px; height: 16px;
+  }
+  .pickup-city-row .city-edit img { width: 12px; height: 12px; display: block; }
+  /* Сдвигаем поиск и список вниз когда city picker виден */
+  .pickup-screen.from-product .pickup-search { top: 168px; }
+  .pickup-screen.from-product .pickup-list { padding-top: 236px; }
   .pickup-header .back-btn {
     position: absolute;
     left: 16px; top: 56px;
@@ -3553,7 +3578,7 @@
                 <div class="del-sub">Доставимо не пізніше Сб, 28 березня</div>
               </div>
             </div>
-            <div class="offer-delivery-item">
+            <div class="offer-delivery-item" id="productPickupItem" style="cursor:pointer;">
               <div class="del-icon">
                 <img src="assets/Samoviviz.svg" alt="">
                 <div class="del-badge del-badge-ktc"><img src="assets/KTC_logo.png" alt="" style="border-radius:50%;width:18px;height:18px;"></div>
@@ -4039,7 +4064,7 @@
         </div>
       </div>
 
-      <!-- Хедер: back + заголовок + лого мерчанта -->
+      <!-- Хедер: back + заголовок + лого мерчанта + city picker -->
       <div class="pickup-header">
         <div class="back-btn" id="pickupBackBtn">
           <img src="assets/back_icon_blue.svg" alt="back">
@@ -4047,6 +4072,11 @@
         <div class="pickup-title-row">
           <div class="pickup-title">Самовивіз з магазину</div>
           <div class="merchant-pill"><img src="assets/KTC_logo.png" alt=""></div>
+        </div>
+        <!-- City picker — виден только при from-product -->
+        <div class="pickup-city-row">
+          <span class="city-name">м. Одеса</span>
+          <span class="city-edit"><img src="assets/Edit.svg" alt=""></span>
         </div>
       </div>
 
@@ -4847,7 +4877,13 @@
     showScreen('pickup');
   });
   document.getElementById('pickupBackBtn').addEventListener('click', () => {
-    showScreen('checkout');
+    const ps = document.getElementById('pickupScreen');
+    if (ps.classList.contains('from-product')) {
+      ps.classList.remove('from-product');
+      showScreen('product');
+    } else {
+      showScreen('checkout');
+    }
   });
 
   // ===== NP-экран: переход и возврат =====
@@ -5085,6 +5121,12 @@
   // Таб «Головна» на корзині → карточка товара
   document.getElementById('cartHomeTab').addEventListener('click', () => {
     showScreen('product');
+  });
+
+  // Самовивіз на product → pickup з city picker
+  document.getElementById('productPickupItem').addEventListener('click', () => {
+    document.getElementById('pickupScreen').classList.add('from-product');
+    showScreen('pickup');
   });
 
 </script>
