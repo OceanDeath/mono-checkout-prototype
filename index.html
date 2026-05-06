@@ -2597,7 +2597,9 @@
     display: block;
   }
   /* Compact-title — виден ТОЛЬКО в .collapsed состоянии шапки.
-     16/700 по центру, на y=68 (figma 6345:8474). */
+     16/700 по центру, на y=68 (figma 6345:8474).
+     Letter-spacing -0.3px (iOS-стандарт для 16/600), хотя в figma-экспорте
+     было +0.36 — визуально это слишком разрежено. */
   .details-header .details-compact-title {
     position: absolute;
     left: 0; right: 0; top: 56px;
@@ -2606,7 +2608,7 @@
     font-weight: 700;
     font-size: 16px;
     line-height: 24px;
-    letter-spacing: 0.36px;
+    letter-spacing: -0.3px;
     color: #000;
     opacity: 0;
     transition: opacity 0.18s ease;
@@ -2724,7 +2726,7 @@
     color: #000;
   }
   .details-status-block .status-eta {
-    margin: 4px 0 0 0;
+    margin: 0;
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
