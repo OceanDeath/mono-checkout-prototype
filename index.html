@@ -3363,6 +3363,53 @@
     z-index: 31;
   }
 
+  /* Toast «Додано до кошику» — figma 6361:9504 */
+  .product-toast {
+    position: absolute;
+    left: 16px;
+    bottom: 108px;
+    width: 343px; height: 68px;
+    background: #fff;
+    border: 0.5px solid #efecec;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    z-index: 19;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    transform: translateY(120%);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(.2,.7,.2,1), opacity 0.35s ease;
+    pointer-events: none;
+  }
+  .product-toast.visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .product-toast .toast-text {
+    flex: 1; min-width: 0;
+  }
+  .product-toast .toast-title {
+    font-weight: 700; font-size: 14px;
+    line-height: 20px; color: #000; margin: 0;
+  }
+  .product-toast .toast-sub {
+    font-weight: 500; font-size: 12px;
+    line-height: 20px; color: #808080; margin: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .product-toast .toast-thumb {
+    width: 40px; height: 40px;
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+    background: #000;
+    border-radius: 100px;
+    z-index: 31;
+  }
+
 </style>
 </head>
 <body>
@@ -3548,6 +3595,15 @@
           <img src="assets/Bazar_Icon.svg" alt="">
           <span class="fab-label">Базар</span>
         </button>
+      </div>
+
+      <!-- Toast «Додано до кошику» -->
+      <div class="product-toast" id="addedToCartToast">
+        <div class="toast-text">
+          <div class="toast-title">Додано до кошику</div>
+          <div class="toast-sub">Ігрова консоль Sony PlayStation 5 Pro...</div>
+        </div>
+        <img class="toast-thumb" src="assets/product_cart_1.png" alt="">
       </div>
 
       <!-- Home indicator -->
@@ -4998,8 +5054,15 @@
   }, { passive: true });
 
   // «В кошик» → переход на корзину
+  // «В кошик» → показываем toast, через 3 сек прячем
+  const addedToast = document.getElementById('addedToCartToast');
+  let toastTimer = null;
   document.getElementById('addToCartBtn').addEventListener('click', () => {
-    showScreen('cart');
+    addedToast.classList.add('visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      addedToast.classList.remove('visible');
+    }, 3000);
   });
 
   // Таб «Кошик» на product screen → корзина
