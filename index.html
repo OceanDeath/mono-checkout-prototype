@@ -1090,7 +1090,7 @@
   .pickup-header {
     position: absolute;
     left: 0; top: 0;
-    width: 375px; height: 136px;
+    width: 375px; height: 184px;
     background: #fff;
     z-index: 30;
   }
@@ -1167,9 +1167,80 @@
   }
 
   /* Поле поиска */
+  /* Сегмент «Список / На карті» */
+  .pickup-segment {
+    position: absolute;
+    left: 16px; top: 136px;
+    width: 343px; height: 40px;
+    background: #f4f4f4;
+    border-radius: 12px;
+    display: flex;
+    padding: 3px;
+    gap: 0;
+  }
+  .pickup-segment .seg-btn {
+    flex: 1;
+    height: 34px;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 500; font-size: 14px;
+    letter-spacing: -0.0448px;
+    color: #808080;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .pickup-segment .seg-btn.active {
+    background: #3083ff;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 0 8px rgba(0,0,0,0.04);
+  }
+
+  /* Map view — видимий тільки коли сегмент «На карті» active */
+  .pickup-map {
+    display: none;
+    position: absolute;
+    left: 0; top: 180px;
+    width: 375px;
+    bottom: 0;
+    background: #e8e4df;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px),
+      linear-gradient(rgba(200,200,200,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,200,200,0.3) 1px, transparent 1px);
+    background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+    z-index: 10;
+  }
+  .pickup-screen.map-active .pickup-map { display: block; }
+  .pickup-screen.map-active .pickup-search { display: none; }
+  .pickup-screen.map-active .pickup-list { display: none; }
+  /* Піни на карті */
+  .map-pin {
+    position: absolute;
+    width: 40px; height: 56px;
+    cursor: pointer;
+  }
+  .map-pin img { width: 40px; height: 56px; display: block; }
+  /* Кнопки управління картою */
+  .map-controls {
+    position: absolute;
+    right: 8px; top: 168px;
+    display: flex; flex-direction: column;
+    gap: 16px;
+    z-index: 11;
+  }
+  .map-controls .map-ctrl-btn {
+    width: 40px; height: 40px;
+    cursor: pointer;
+  }
+  .map-controls .map-ctrl-btn img { width: 40px; height: 40px; display: block; }
+
   .pickup-search {
     position: absolute;
-    left: 16px; top: 144px;
+    left: 16px; top: 192px;
     width: 343px; height: 48px;
     background: #f3f3f3;
     border-radius: 12px;
@@ -1202,7 +1273,7 @@
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     z-index: 10;
-    padding: 212px 0 40px 0;     /* 212 = низ поиска (192) + 20 воздуха */
+    padding: 260px 0 40px 0;     /* 260 = search bottom (240) + 20 воздуха */
   }
 
   /* Карточка магазина в списке */
@@ -4292,6 +4363,11 @@
           <div class="pickup-title">Самовивіз з магазину</div>
           <div class="merchant-pill"><img src="assets/KTC_logo.png" alt=""></div>
         </div>
+        <!-- Сегмент «Список / На карті» -->
+        <div class="pickup-segment">
+          <button class="seg-btn active" id="segList">Список</button>
+          <button class="seg-btn" id="segMap">На карті</button>
+        </div>
       </div>
 
       <!-- Поле поиска -->
@@ -4303,6 +4379,20 @@
           </svg>
         </div>
         <div class="placeholder">Введіть адресу або назву ТЦ</div>
+      </div>
+
+      <!-- Map view — видимий при сегменті «На карті» -->
+      <div class="pickup-map" id="pickupMap">
+        <!-- Піни магазинів -->
+        <div class="map-pin" style="left:187px; top:144px;"><img src="assets/Merchant_Pin.svg" alt=""></div>
+        <div class="map-pin" style="left:58px; top:251px;"><img src="assets/Merchant_Pin.svg" alt=""></div>
+        <div class="map-pin" style="left:235px; top:327px;"><img src="assets/Merchant_Pin.svg" alt=""></div>
+        <!-- Кнопки управління -->
+        <div class="map-controls">
+          <div class="map-ctrl-btn"><img src="assets/Plus.svg" alt="+"></div>
+          <div class="map-ctrl-btn"><img src="assets/Minus.svg" alt="−"></div>
+          <div class="map-ctrl-btn"><img src="assets/Location.svg" alt="location"></div>
+        </div>
       </div>
 
       <!-- Скроллируемый список магазинов -->
@@ -5017,6 +5107,19 @@
   // Back з status-timeline → details
   document.getElementById('statusTimelineBackBtn').addEventListener('click', () => {
     showScreen('details');
+  });
+
+  // Сегмент «Список / На карті» на pickup screen
+  const pickupScreenEl = document.getElementById('pickupScreen');
+  document.getElementById('segList').addEventListener('click', () => {
+    document.getElementById('segList').classList.add('active');
+    document.getElementById('segMap').classList.remove('active');
+    pickupScreenEl.classList.remove('map-active');
+  });
+  document.getElementById('segMap').addEventListener('click', () => {
+    document.getElementById('segMap').classList.add('active');
+    document.getElementById('segList').classList.remove('active');
+    pickupScreenEl.classList.add('map-active');
   });
 
   // ===== Сворачивание шапки details при скролле =====
