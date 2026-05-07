@@ -3449,6 +3449,143 @@
   /* Скрываем оффери когда скелетон видимый */
   .product-offers-hidden .product-offer-card { display: none; }
 
+  /* =====================================================================
+     Екран статусу замовлення (status-timeline) — figma 6380:17391
+     ===================================================================== */
+  .status-timeline-screen {
+    background: #f4f4f4;
+  }
+  .status-timeline-screen .st-header {
+    position: absolute;
+    left: 0; top: 0;
+    width: 375px; height: 120px;
+    background: #f4f4f4;
+    z-index: 30;
+  }
+  .status-timeline-screen .status-bar {
+    position: absolute;
+    left: 0; top: 0;
+    width: 375px; height: 44px;
+    z-index: 31;
+  }
+  .status-timeline-screen .status-bar .time {
+    position: absolute;
+    left: 21px; top: 16px;
+    font-weight: 600; font-size: 15px;
+    line-height: 20px; letter-spacing: -0.3px;
+    color: #000;
+  }
+  .status-timeline-screen .status-bar .icons {
+    position: absolute;
+    right: 14px; top: 17px;
+    height: 12px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .status-timeline-screen .status-bar .icons img {
+    height: 12px; display: block;
+  }
+  .status-timeline-screen .st-header .back-btn {
+    position: absolute;
+    left: 16px; top: 56px;
+    width: 24px; height: 24px;
+    cursor: pointer;
+  }
+  .status-timeline-screen .st-header .back-btn img { width: 24px; height: 24px; display: block; }
+  .status-timeline-screen .st-title {
+    position: absolute;
+    left: 16px; top: 88px;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 700; font-size: 24px;
+    line-height: 32px;
+    letter-spacing: 0.36px;
+    color: #000;
+  }
+  /* Timeline карточка */
+  .st-card {
+    position: absolute;
+    left: 16px; top: 136px;
+    width: 343px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .st-step {
+    display: flex;
+    gap: 16px;
+    position: relative;
+  }
+  .st-step + .st-step { margin-top: 24px; }
+  /* Вертикальная пунктирная линия между шагами */
+  .st-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 11px; top: 28px;
+    width: 2px;
+    bottom: -24px;
+    border-left: 2px dashed #d9d9d9;
+  }
+  .st-dot {
+    width: 24px; height: 24px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .st-dot img { width: 24px; height: 24px; display: block; }
+  .st-dot.gray {
+    width: 8px; height: 8px;
+    margin: 8px;
+    background: #d9d9d9;
+    border-radius: 50%;
+  }
+  .st-step-body { flex: 1; min-width: 0; }
+  .st-step-title {
+    font-weight: 600; font-size: 16px;
+    line-height: 24px; color: #000;
+    margin: 0;
+  }
+  .st-step-title.gray { color: #808080; }
+  .st-step-desc {
+    font-weight: 500; font-size: 14px;
+    line-height: 20px; letter-spacing: -0.154px;
+    color: #808080;
+    margin: 4px 0 0;
+  }
+  .st-step-desc b {
+    font-weight: 700;
+  }
+  /* Карточка действия */
+  .st-action-card {
+    position: absolute;
+    left: 16px; top: 432px;
+    width: 343px; height: 64px;
+    background: #fff;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 16px;
+  }
+  .st-action-card .action-icon {
+    width: 32px; height: 32px;
+    background: #306eff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .st-action-card .action-icon img { width: 16px; height: 16px; display: block; }
+  .st-action-card .action-label {
+    font-weight: 600; font-size: 14px;
+    line-height: 24px; color: #000;
+  }
+  .status-timeline-screen .home-indicator {
+    position: absolute;
+    bottom: 8px; left: 50%;
+    transform: translateX(-50%);
+    width: 134px; height: 5px;
+    background: #000;
+    border-radius: 100px;
+    z-index: 31;
+  }
+
 </style>
 </head>
 <body>
@@ -4562,6 +4699,66 @@
 
     </div><!-- /.details-screen -->
 
+    <!-- ====== Екран статусу замовлення (timeline) ====== figma 6380:17391 -->
+    <div class="screen status-timeline-screen" id="statusTimelineScreen">
+
+      <div class="st-header">
+        <div class="status-bar">
+          <div class="time">19:12</div>
+          <div class="icons">
+            <img src="assets/cellular.svg" alt="" width="17" height="11">
+            <img src="assets/wifi.svg" alt="" width="16" height="11">
+            <img src="assets/battery.svg" alt="" width="25" height="12">
+          </div>
+        </div>
+        <div class="back-btn" id="statusTimelineBackBtn">
+          <img src="assets/back_icon_blue.svg" alt="back">
+        </div>
+        <div class="st-title">Статус замовлення</div>
+      </div>
+
+      <!-- Timeline карточка -->
+      <div class="st-card">
+        <!-- Крок 1: Готується до видачі (активний) -->
+        <div class="st-step">
+          <div class="st-dot">
+            <img src="assets/Clock.svg" alt="">
+          </div>
+          <div class="st-step-body">
+            <div class="st-step-title">Готується до видачі</div>
+            <div class="st-step-desc">Ваше замовлення будет готово <b>сьогодні, після 17:00</b></div>
+          </div>
+        </div>
+        <!-- Крок 2: Очікує в магазині -->
+        <div class="st-step">
+          <div class="st-dot gray"></div>
+          <div class="st-step-body">
+            <div class="st-step-title gray">Очікує в магазині</div>
+            <div class="st-step-desc">Заамовлення можно зарбрати за допомогою кода який ми вам предоставимо</div>
+          </div>
+        </div>
+        <!-- Крок 3: Виконано -->
+        <div class="st-step">
+          <div class="st-dot gray"></div>
+          <div class="st-step-body">
+            <div class="st-step-title gray">Виконано</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Карточка действия -->
+      <div class="st-action-card">
+        <div class="action-icon">
+          <img src="assets/copy_to_clipboard_icon.svg" alt="">
+        </div>
+        <span class="action-label">Поставити запитання</span>
+      </div>
+
+      <!-- Home indicator -->
+      <div class="home-indicator"></div>
+
+    </div><!-- /.status-timeline-screen -->
+
     </div><!-- /.phone -->
   </div><!-- /.device -->
 
@@ -4784,22 +4981,22 @@
     console.log('ask question clicked');
   });
 
-  // ===== Переключение стейтов деталей по клику на status-block =====
+  // ===== Переключение стейтов деталей по клику на ІКОНКУ статуса =====
   // default → state-ready → state-done
   const detailsStatusBlock = document.querySelector('#detailsScreen .details-status-block');
-  detailsStatusBlock.style.cursor = 'pointer';
-  detailsStatusBlock.addEventListener('click', () => {
+  const statusIcon = detailsStatusBlock.querySelector('.status-icon');
+  statusIcon.style.cursor = 'pointer';
+  statusIcon.addEventListener('click', (e) => {
+    e.stopPropagation();
     const screen = document.getElementById('detailsScreen');
-    if (screen.classList.contains('state-done')) return; // финальный стейт
+    if (screen.classList.contains('state-done')) return;
     if (screen.classList.contains('state-ready')) {
-      // state-ready → state-done
       screen.classList.remove('state-ready');
       screen.classList.add('state-done');
       detailsStatusBlock.querySelector('.status-icon img').src = 'assets/Status_done.svg';
       detailsStatusBlock.querySelector('.status-name').textContent = 'Виконано';
       detailsStatusBlock.querySelector('.status-eta').innerHTML = '12 березня';
     } else {
-      // default → state-ready
       screen.classList.add('state-ready');
       detailsStatusBlock.querySelector('.status-icon img').src = 'assets/Ready_for_delivery.svg';
       detailsStatusBlock.querySelector('.status-name').textContent = 'Очікує в магазині';
@@ -4807,6 +5004,22 @@
     }
     document.getElementById('detailsList').scrollTop = 0;
     document.getElementById('detailsHeader').classList.remove('collapsed');
+  });
+
+  // Шеврон → відкриває екран статусу (тільки в першому стейті «Готується до видачі»)
+  const statusChevron = detailsStatusBlock.querySelector('.status-chevron');
+  statusChevron.style.cursor = 'pointer';
+  statusChevron.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const screen = document.getElementById('detailsScreen');
+    if (!screen.classList.contains('state-ready') && !screen.classList.contains('state-done')) {
+      showScreen('statusTimeline');
+    }
+  });
+
+  // Back з status-timeline → details
+  document.getElementById('statusTimelineBackBtn').addEventListener('click', () => {
+    showScreen('details');
   });
 
   // ===== Сворачивание шапки details при скролле =====
@@ -4937,6 +5150,7 @@
   const npScreen       = document.getElementById('npScreen');
   const successScreen  = document.getElementById('successScreen');
   const detailsScreen  = document.getElementById('detailsScreen');
+  const statusTimelineScreen = document.getElementById('statusTimelineScreen');
   function showScreen(name) {
     productScreen.classList.toggle('active',  name === 'product');
     cartScreen.classList.toggle('active',     name === 'cart');
@@ -4945,6 +5159,7 @@
     npScreen.classList.toggle('active',       name === 'np');
     successScreen.classList.toggle('active',  name === 'success');
     detailsScreen.classList.toggle('active',  name === 'details');
+    statusTimelineScreen.classList.toggle('active', name === 'statusTimeline');
     const active = document.querySelector('.screen.active');
     if (active) {
       const scrollEl = active.querySelector('.scroll-area, .np-list, .pickup-list, .details-list, .product-scroll');
