@@ -1093,33 +1093,7 @@
     width: 375px; height: 136px;
     background: #fff;
     z-index: 30;
-    transition: height 0.2s ease;
   }
-  /* Когда pickup открыт из product — шапка выше (160px), город виден */
-  .pickup-screen.from-product .pickup-header { height: 160px; }
-  .pickup-city-row {
-    display: none;
-    position: absolute;
-    left: 16px; top: 120px;
-    align-items: center;
-    gap: 4px;
-    height: 24px;
-    white-space: nowrap;
-  }
-  .pickup-screen.from-product .pickup-city-row { display: flex; }
-  .pickup-city-row .city-name {
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight: 700; font-size: 16px;
-    line-height: 24px; letter-spacing: 0.36px;
-    color: #306eff;
-  }
-  .pickup-city-row .city-edit {
-    width: 16px; height: 16px;
-    display: block;
-  }
-  /* Сдвигаем поиск и список вниз когда city picker виден */
-  .pickup-screen.from-product .pickup-search { top: 168px; }
-  .pickup-screen.from-product .pickup-list { padding-top: 236px; }
   .pickup-header .back-btn {
     position: absolute;
     left: 16px; top: 56px;
@@ -3447,6 +3421,34 @@
     z-index: 31;
   }
 
+  /* Скелетон для перезагрузки офферів */
+  .product-offers-skeleton {
+    display: none;
+    margin: 0 16px 16px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  }
+  .product-offers-skeleton.visible { display: block; }
+  .skeleton-line {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+  }
+  .skeleton-line.w60 { width: 60%; height: 20px; margin-bottom: 8px; }
+  .skeleton-line.w40 { width: 40%; height: 16px; margin-bottom: 16px; }
+  .skeleton-line.w100 { width: 100%; height: 48px; margin-bottom: 8px; border-radius: 16px; }
+  .skeleton-line.w80 { width: 80%; height: 20px; margin-bottom: 8px; }
+  .skeleton-line.w50 { width: 50%; height: 20px; }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  /* Скрываем оффери когда скелетон видимый */
+  .product-offers-hidden .product-offer-card { display: none; }
+
 </style>
 </head>
 <body>
@@ -3514,7 +3516,20 @@
         </div>
 
         <!-- 1 пропозиція -->
-        <div class="product-offers-title">1 пропозиція</div>
+        <div class="product-offers-title">2 пропозиції</div>
+
+        <!-- Скелетон (видимый при перезагрузке) -->
+        <div class="product-offers-skeleton" id="offersSkeleton">
+          <div class="skeleton-line w60"></div>
+          <div class="skeleton-line w40"></div>
+          <div class="skeleton-line w100"></div>
+          <div class="skeleton-line w100"></div>
+          <div class="skeleton-line w80"></div>
+          <div class="skeleton-line w50"></div>
+        </div>
+
+        <!-- Обгортка офферів -->
+        <div id="offersContainer">
 
         <!-- Оффер КТС -->
         <div class="product-offer-card">
@@ -3532,16 +3547,16 @@
           <!-- Цена -->
           <div class="offer-price-block">
             <div class="offer-price-row">
-              <span class="price">63 999 ₴</span>
+              <span class="price">22 999 ₴</span>
               <span class="discount-badge">-15%</span>
             </div>
-            <div class="offer-old-price">77 499 ₴</div>
+            <div class="offer-old-price">26 999 ₴</div>
 
             <!-- Частинами — розоватая подложка внутри серого блока -->
             <div class="offer-installment">
               <div class="inst-top">
                 <div class="inst-left">
-                  <span class="inst-price">10 667 ₴</span>
+                  <span class="inst-price">3 833 ₴</span>
                   <div class="inst-label">
                     <span>× 6 платежів</span>
                   </div>
@@ -3582,7 +3597,7 @@
             <div class="offer-delivery-item" id="productPickupItem" style="cursor:pointer;">
               <div class="del-icon">
                 <img src="assets/Samoviviz.svg" alt="">
-                <div class="del-badge del-badge-ktc"><img src="assets/KTC_logo.png" alt="" style="border-radius:50%;width:18px;height:18px;"></div>
+                <div class="del-badge"><img src="assets/KTC_badge.svg" alt=""></div>
               </div>
               <div class="del-text">
                 <div class="del-title">Самовивіз з магазину</div>
@@ -3600,6 +3615,80 @@
             <button class="btn-buy">Купити зараз</button>
           </div>
         </div>
+
+        <!-- Оффер Фокстрот -->
+        <div class="product-offer-card">
+          <!-- Мерчант -->
+          <div class="offer-merchant">
+            <img src="assets/Foxtrot_logo.png" alt="Фокстрот">
+            <div class="offer-merchant-info">
+              <span class="merchant-name">Фокстрот</span>
+              <div class="offer-warranty">
+                <span>Офіційна гарантія <b>1 рік</b> ✅</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Цена -->
+          <div class="offer-price-block">
+            <div class="offer-price-row">
+              <span class="price">23 499 ₴</span>
+              <span class="discount-badge">-12%</span>
+            </div>
+            <div class="offer-old-price">26 699 ₴</div>
+
+            <div class="offer-installment">
+              <div class="inst-top">
+                <div class="inst-left">
+                  <span class="inst-price">3 917 ₴</span>
+                  <div class="inst-label">
+                    <span>× 6 платежів</span>
+                  </div>
+                </div>
+                <div class="inst-lapka">
+                  <img src="assets/Lapka_black.svg" alt="">
+                </div>
+              </div>
+              <div class="offer-limit-row">
+                <span>👍 Достатньо вашого ліміту 120 000 ₴</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Опции доставки — без самовывоза -->
+          <div class="offer-delivery-list">
+            <div class="offer-delivery-item">
+              <div class="del-icon">
+                <img src="assets/Viddilennya.png" alt="">
+                <div class="del-badge"><img src="assets/NP_Badge.svg" alt=""></div>
+              </div>
+              <div class="del-text">
+                <div class="del-title">Безкоштовно у віділення</div>
+                <div class="del-sub">Доставимо не пізніше Пн, 30 березня</div>
+              </div>
+            </div>
+            <div class="offer-delivery-item">
+              <div class="del-icon">
+                <img src="assets/Courier.png" alt="">
+                <div class="del-badge"><img src="assets/NP_Badge.svg" alt=""></div>
+              </div>
+              <div class="del-text">
+                <div class="del-title">Безкоштовно у квартиру</div>
+                <div class="del-sub">Доставимо не пізніше Пн, 30 березня</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Кнопки -->
+          <div class="offer-buttons">
+            <button class="btn-cart" id="addToCartBtn2">
+              <img src="assets/Cart_Add.svg" alt="">
+              В кошик
+            </button>
+            <button class="btn-buy">Купити зараз</button>
+          </div>
+        </div>
+        </div><!-- /#offersContainer -->
 
       </div><!-- /.product-scroll -->
 
@@ -4073,11 +4162,6 @@
         <div class="pickup-title-row">
           <div class="pickup-title">Самовивіз з магазину</div>
           <div class="merchant-pill"><img src="assets/KTC_logo.png" alt=""></div>
-        </div>
-        <!-- City picker — виден только при from-product -->
-        <div class="pickup-city-row">
-          <span class="city-name">м. Одеса</span>
-          <img class="city-edit" src="assets/Edit.svg" alt="">
         </div>
       </div>
 
@@ -5102,6 +5186,49 @@
     productHeader.classList.toggle('scrolled', productScroll.scrollTop > 4);
   }, { passive: true });
 
+  // Чипы памяти — перемикання з скелетоном
+  const chips = document.querySelectorAll('.product-chips .chip');
+  const offersContainer = document.getElementById('offersContainer');
+  const offersSkeleton = document.getElementById('offersSkeleton');
+  // Ціни для 2ТБ і 1ТБ
+  const priceData = {
+    '2 ТБ': { ktc: '22 999', ktkOld: '26 999', ktkDiscount: '-15%', ktkInst: '3 833', fox: '23 499', foxOld: '26 699', foxDiscount: '-12%', foxInst: '3 917' },
+    '1 ТБ': { ktc: '19 999', ktkOld: '23 999', ktkDiscount: '-17%', ktkInst: '3 333', fox: '20 499', foxOld: '23 699', foxDiscount: '-14%', foxInst: '3 417' }
+  };
+  let currentChip = '2 ТБ';
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const label = chip.textContent.trim();
+      if (label === currentChip) return;
+      currentChip = label;
+      // Перемикаємо active
+      chips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      // Показуємо скелетон, ховаємо оффери
+      offersSkeleton.classList.add('visible');
+      offersContainer.style.display = 'none';
+      // Через 1.5с — міняємо ціни і показуємо
+      setTimeout(() => {
+        const d = priceData[label];
+        // КТС ціни
+        const ktcCard = offersContainer.querySelectorAll('.product-offer-card')[0];
+        ktcCard.querySelector('.offer-price-row .price').textContent = d.ktc + ' ₴';
+        ktcCard.querySelector('.discount-badge').textContent = d.ktkDiscount;
+        ktcCard.querySelector('.offer-old-price').textContent = d.ktkOld + ' ₴';
+        ktcCard.querySelector('.inst-price').textContent = d.ktkInst + ' ₴';
+        // Фокстрот ціни
+        const foxCard = offersContainer.querySelectorAll('.product-offer-card')[1];
+        foxCard.querySelector('.offer-price-row .price').textContent = d.fox + ' ₴';
+        foxCard.querySelector('.discount-badge').textContent = d.foxDiscount;
+        foxCard.querySelector('.offer-old-price').textContent = d.foxOld + ' ₴';
+        foxCard.querySelector('.inst-price').textContent = d.foxInst + ' ₴';
+        // Показуємо оффери, ховаємо скелетон
+        offersSkeleton.classList.remove('visible');
+        offersContainer.style.display = '';
+      }, 1500);
+    });
+  });
+
   // «В кошик» → переход на корзину
   // «В кошик» → показываем toast, через 3 сек прячем
   const addedToast = document.getElementById('addedToCartToast');
@@ -5122,6 +5249,15 @@
   // Таб «Головна» на корзині → карточка товара
   document.getElementById('cartHomeTab').addEventListener('click', () => {
     showScreen('product');
+  });
+
+  // «В кошик» (Фокстрот) → показываем toast
+  document.getElementById('addToCartBtn2').addEventListener('click', () => {
+    addedToast.classList.add('visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      addedToast.classList.remove('visible');
+    }, 3000);
   });
 
   // Самовивіз на product → pickup з city picker
