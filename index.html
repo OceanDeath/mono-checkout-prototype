@@ -3519,7 +3519,7 @@
         <div class="product-offers-title">2 пропозиції</div>
 
         <!-- Скелетон (видимый при перезагрузке) -->
-        <div class="product-offers-skeleton" id="offersSkeleton">
+        <div class="product-offers-skeleton" id="offersSkeleton" style="display:none;">
           <div class="skeleton-line w60"></div>
           <div class="skeleton-line w40"></div>
           <div class="skeleton-line w100"></div>
@@ -5205,7 +5205,7 @@
       chips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       // Показуємо скелетон, ховаємо оффери
-      offersSkeleton.classList.add('visible');
+      offersSkeleton.style.display = 'block';
       offersContainer.style.display = 'none';
       // Через 1.5с — міняємо ціни і показуємо
       setTimeout(() => {
@@ -5223,7 +5223,7 @@
         foxCard.querySelector('.offer-old-price').textContent = d.foxOld + ' ₴';
         foxCard.querySelector('.inst-price').textContent = d.foxInst + ' ₴';
         // Показуємо оффери, ховаємо скелетон
-        offersSkeleton.classList.remove('visible');
+        offersSkeleton.style.display = 'none';
         offersContainer.style.display = '';
       }, 1500);
     });
