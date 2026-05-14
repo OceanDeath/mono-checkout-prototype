@@ -520,7 +520,78 @@
     transition: max-height 0.25s cubic-bezier(.2,.6,.2,1);
   }
   .del-option.active .del-expand {
-    max-height: 200px;
+    max-height: 300px;
+  }
+
+  /* --- Блок мерчанта (внутри самовивозу) --- */
+  /* Коннектор-линия от иконки самовивозу до лого KTC */
+  .connector-line {
+    display: none;
+    position: absolute;
+    left: 15px; top: 34px;
+    width: 2px;
+    height: 40px;
+    background: #d9d9d9;
+  }
+  .del-option-pickup.active .connector-line { display: block; }
+
+  /* Раскрываемый блок самовивозу — полная ширина, не внутри del-body */
+  .pickup-expand {
+    width: 100%;
+    padding: 8px 0 0 0;
+  }
+  .merchant-block {
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 48px;
+    position: relative;
+  }
+  .merchant-logo {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .merchant-logo img { width: 32px; height: 32px; object-fit: cover; display: block; }
+  .merchant-info {
+    flex: 1; min-width: 0;
+    margin-left: 16px;
+  }
+  .merchant-name {
+    font-weight: 600; font-size: 14px; line-height: 20px;
+    letter-spacing: -0.0448px; color: #000;
+  }
+  .merchant-count {
+    font-weight: 400; font-size: 14px; line-height: 16px;
+    color: #808080;
+  }
+  .merchant-products {
+    display: flex; gap: 8px; flex-shrink: 0;
+    margin-right: 0;
+  }
+  .merchant-thumb {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .merchant-thumb img { width: 32px; height: 32px; object-fit: contain; display: block; }
+
+  /* Адрес и ссылка для самовивозу */
+  .pickup-address {
+    font-weight: 400; font-size: 14px; line-height: 20px;
+    letter-spacing: -0.0448px; color: #000;
+    margin: 12px 0 0 48px;
+    padding-right: 16px;
+  }
+  .pickup-change {
+    margin: 8px 0 4px 48px;
+    display: flex; align-items: center;
+    cursor: pointer; width: max-content;
+  }
+  .pickup-change span {
+    font-weight: 700; font-size: 14px; line-height: 24px;
+    letter-spacing: -0.0448px; color: #306eff;
   }
 
   /* ====================== Модал оплаты ====================== */
@@ -798,23 +869,38 @@
           <div class="del-sep"></div>
 
           <!-- 3. Самовивіз -->
-          <div class="del-option" data-option="pickup" id="optPickup">
+          <div class="del-option del-option-pickup" data-option="pickup" id="optPickup">
             <div class="del-icon">
               <img src="assets/Pickup.svg" alt="">
+              <!-- Вертикальная линия-коннектор к лого KTC -->
+              <div class="connector-line"></div>
             </div>
             <div class="del-body">
               <div class="del-title">Самовивіз з магазину</div>
               <div class="del-sub">Забрати сьогодні</div>
-              <div class="del-expand">
-                <div class="del-address">м. Одеса, вул. Пантелеймонівська 88/1а</div>
-                <div class="del-change" onclick="event.stopPropagation()">
-                  <span>Обрати магазин</span>
-                </div>
-              </div>
             </div>
             <div class="del-indicator">
               <img class="ind-checkbox" src="assets/Checkbox.svg" alt="">
               <img class="ind-chevron" src="assets/Shevron_Down.svg" alt="">
+            </div>
+            <!-- Раскрываемый блок — на уровне карточки, не внутри del-body -->
+            <div class="del-expand pickup-expand">
+              <!-- Блок мерчанта KTC -->
+              <div class="merchant-block">
+                <div class="merchant-logo"><img src="assets/KTC_logo.png" alt=""></div>
+                <div class="merchant-info">
+                  <div class="merchant-name">KTC</div>
+                  <div class="merchant-count">2 товари</div>
+                </div>
+                <div class="merchant-products">
+                  <div class="merchant-thumb"><img src="assets/product_cart_1.png" alt=""></div>
+                  <div class="merchant-thumb"><img src="assets/product_cart_2.png" alt=""></div>
+                </div>
+              </div>
+              <div class="pickup-address">м. Одеса, вул. Пантелеймонівська 88/1а, (ТРЦ Fontan Sky)</div>
+              <div class="pickup-change" onclick="event.stopPropagation()">
+                <span>Змінити адресу</span>
+              </div>
             </div>
           </div>
 
