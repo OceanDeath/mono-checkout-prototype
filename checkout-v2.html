@@ -513,14 +513,12 @@
   .del-option.active .del-indicator .ind-checkbox { display: block; }
   .del-option.active .del-indicator .ind-chevron { display: none; }
 
-  /* Анимация раскрытия — высота контента */
+  /* Анимация раскрытия */
   .del-option .del-expand {
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.25s cubic-bezier(.2,.6,.2,1);
+    display: none;
   }
   .del-option.active .del-expand {
-    max-height: 300px;
+    display: block;
   }
 
   /* --- Merchant row (inside pickup's del-expand) ---
