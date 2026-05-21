@@ -446,15 +446,6 @@
     display: block;
     border-radius: 50%;
   }
-  /* Бейдж НП — 18×18 визуальный, img 34×34 с тенью */
-  .del-option .del-icon .np-badge {
-    position: absolute;
-    left: 10px; top: 10px;
-    width: 34px; height: 34px;
-    z-index: 2;
-    pointer-events: none;
-  }
-  .del-option .del-icon .np-badge img { width: 34px; height: 34px; display: block; }
 
   /* Тело текста */
   .del-option .del-body {
@@ -471,16 +462,8 @@
     color: #808080;
     margin-top: 2px;
   }
-  /* Адрес — виден только у выбранного */
-  .del-option .del-address {
-    font-weight: 400; font-size: 14px; line-height: 20px;
-    letter-spacing: -0.0448px; color: #000;
-    margin-top: 10px;
-    display: none;
-  }
-  .del-option.active .del-address { display: block; }
 
-  /* Ссылка «Змінити відділення/адресу» — видна только у выбранного */
+  /* Ссылка «Обрати адресу» — видна только у выбранного */
   .del-option .del-change {
     margin-top: 8px;
     display: none;
@@ -495,23 +478,23 @@
     letter-spacing: -0.0448px; color: #306eff;
   }
 
-  /* --- Индикатор справа: checkbox (active) или шеврон (collapsed) --- */
+  /* --- Индикатор справа: радиобаттон --- */
   .del-option .del-indicator {
     position: absolute;
     right: 16px; top: 20px;
-    width: 20px; height: 20px;
+    width: 24px; height: 24px;
   }
-  .del-option .del-indicator .ind-checkbox {
-    display: none;
+  .radio-btn {
     width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid #ccc;
+    background: #fff;
+    transition: border 0.15s;
+    margin: 2px;
   }
-  .del-option .del-indicator .ind-chevron {
-    display: block;
-    width: 20px; height: 20px;
-    transition: transform 0.2s;
+  .del-option.active .radio-btn {
+    border: 6px solid #306eff;
   }
-  .del-option.active .del-indicator .ind-checkbox { display: block; }
-  .del-option.active .del-indicator .ind-chevron { display: none; }
 
   /* Анимация раскрытия */
   .del-option .del-expand {
@@ -520,58 +503,6 @@
   .del-option.active .del-expand {
     display: block;
   }
-
-  /* --- Merchant row (inside pickup's del-expand) ---
-     del-body has margin-left:48px, margin-right:36px from del-option.
-     We use negative margins to break out and align with del-icon level.
-     Figma: KTC logo at same left as delivery icons (left=16 from card).
-     Thumbs flush to right edge (right=16 from card). */
-  .merchant-row {
-    display: flex;
-    align-items: center;
-    margin-left: -48px;
-    margin-right: -36px;
-    padding-top: 20px;
-    position: relative;
-  }
-  .merchant-connector {
-    position: absolute;
-    left: 15px;
-    top: -2px;
-    width: 2px;
-    height: 18px;
-    background: #d9d9d9;
-    border-radius: 1px;
-  }
-  .merchant-logo {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .merchant-logo img { width: 32px; height: 32px; object-fit: cover; display: block; }
-  .merchant-info {
-    flex: 1; min-width: 0;
-    margin-left: 16px;
-  }
-  .merchant-name {
-    font-weight: 600; font-size: 14px; line-height: 20px;
-    letter-spacing: -0.0448px; color: #000;
-  }
-  .merchant-count {
-    font-weight: 400; font-size: 14px; line-height: 16px;
-    color: #808080;
-  }
-  .merchant-products {
-    display: flex; gap: 8px; flex-shrink: 0;
-  }
-  .merchant-thumb {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #fff;
-  }
-  .merchant-thumb img { width: 32px; height: 32px; object-fit: contain; display: block; }
 
   /* ====================== Модал оплаты ====================== */
   .payment-modal {
@@ -749,10 +680,9 @@
           <img src="assets/Edit.svg" alt="">
           <span>Редагувати</span>
         </div>
-        <div class="qty">3 товари</div>
-        <div class="price">85 198 ₴</div>
+        <div class="qty">2 товари</div>
+        <div class="price">35 198 ₴</div>
         <div class="products">
-          <div class="product"><img src="assets/product_cart_1.png" alt=""></div>
           <div class="product"><img src="assets/product_cart_2.png" alt=""></div>
           <div class="product"><img src="assets/product_cart_3.png" alt=""></div>
         </div>
@@ -779,7 +709,7 @@
         <div class="uchevron"><img src="assets/Chevron_Right_MD.svg" alt=""></div>
       </div>
 
-      <!-- ====== НОВАЯ КАРТОЧКА ДОСТАВКИ V2 ====== -->
+      <!-- ====== КАРТОЧКА ДОСТАВКИ V2 — радиобаттоны ====== -->
       <div class="card delivery-card-v2" id="deliveryCard">
 
         <!-- Город -->
@@ -799,25 +729,22 @@
         <!-- Опции доставки -->
         <div class="del-options">
 
-          <!-- 1. До відділення -->
+          <!-- 1. Відділення або поштомат -->
           <div class="del-option active" data-option="dept" id="optDept">
             <div class="del-icon">
-              <img src="assets/Dostavka.svg" alt="">
-              <div class="np-badge"><img src="assets/NP_Badge.svg" alt=""></div>
+              <img src="assets/NP_logo_40x40.svg" alt="">
             </div>
             <div class="del-body">
-              <div class="del-title">До відділення №27</div>
+              <div class="del-title">Відділення або поштомат</div>
               <div class="del-sub">Доставимо 28 березня (Сб)</div>
               <div class="del-expand">
-                <div class="del-address">вул. Новосельского 64</div>
                 <div class="del-change" onclick="event.stopPropagation()">
-                  <span>Змінити відділення</span>
+                  <span>Обрати адресу</span>
                 </div>
               </div>
             </div>
             <div class="del-indicator">
-              <img class="ind-checkbox" src="assets/Checkbox.svg" alt="">
-              <img class="ind-chevron" src="assets/Shevron_Down.svg" alt="">
+              <div class="radio-btn"></div>
             </div>
           </div>
 
@@ -826,22 +753,19 @@
           <!-- 2. Кур'єр -->
           <div class="del-option" data-option="courier" id="optCourier">
             <div class="del-icon">
-              <img src="assets/Courier.svg" alt="">
-              <div class="np-badge"><img src="assets/NP_Badge.svg" alt=""></div>
+              <img src="assets/Courier_logo_40x40.svg" alt="">
             </div>
             <div class="del-body">
               <div class="del-title">Кур'єр на вашу адресу</div>
               <div class="del-sub">Доставимо 28 березня (Сб)</div>
               <div class="del-expand">
-                <div class="del-address">вул. Новосельского 69/71, під'їзд 2, поверх 4, кв. 44</div>
                 <div class="del-change" onclick="event.stopPropagation()">
-                  <span>Змінити адресу</span>
+                  <span>Обрати адресу</span>
                 </div>
               </div>
             </div>
             <div class="del-indicator">
-              <img class="ind-checkbox" src="assets/Checkbox.svg" alt="">
-              <img class="ind-chevron" src="assets/Shevron_Down.svg" alt="">
+              <div class="radio-btn"></div>
             </div>
           </div>
 
@@ -850,34 +774,19 @@
           <!-- 3. Самовивіз -->
           <div class="del-option" data-option="pickup" id="optPickup">
             <div class="del-icon">
-              <img src="assets/Pickup.svg" alt="">
+              <img src="assets/KTC_logo_40x40.svg" alt="">
             </div>
             <div class="del-body">
               <div class="del-title">Самовивіз з магазину</div>
               <div class="del-sub">Забрати сьогодні</div>
               <div class="del-expand">
-                <!-- Merchant KTC row — вынесен на уровень иконок (margin-left: -48px) -->
-                <div class="merchant-row">
-                  <div class="merchant-connector"></div>
-                  <div class="merchant-logo"><img src="assets/KTC_logo.png" alt=""></div>
-                  <div class="merchant-info">
-                    <div class="merchant-name">KTC</div>
-                    <div class="merchant-count">2 товари</div>
-                  </div>
-                  <div class="merchant-products">
-                    <div class="merchant-thumb"><img src="assets/product_cart_1.png" alt=""></div>
-                    <div class="merchant-thumb"><img src="assets/product_cart_2.png" alt=""></div>
-                  </div>
-                </div>
-                <div class="del-address">м. Одеса, вул. Пантелеймонівська 88/1а, (ТРЦ Fontan Sky)</div>
                 <div class="del-change" onclick="event.stopPropagation()">
-                  <span>Змінити адресу</span>
+                  <span>Обрати магазин</span>
                 </div>
               </div>
             </div>
             <div class="del-indicator">
-              <img class="ind-checkbox" src="assets/Checkbox.svg" alt="">
-              <img class="ind-chevron" src="assets/Shevron_Down.svg" alt="">
+              <div class="radio-btn"></div>
             </div>
           </div>
 
@@ -936,7 +845,7 @@
           <img class="info-icon" src="assets/info_small.svg" alt="">
           <span class="info-text">Зведена платіжна інструкція оплати</span>
         </div>
-        <button class="pay-btn" id="payFullBtn">Сплатити повністю: 85 198 ₴</button>
+        <button class="pay-btn" id="payFullBtn">Сплатити повністю: 35 198 ₴</button>
         <div class="sheet-home-indicator"></div>
       </div>
     </div>
