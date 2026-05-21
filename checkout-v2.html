@@ -471,6 +471,7 @@
     gap: 4px;
     cursor: pointer;
     width: max-content;
+    position: relative;
   }
   .del-option.active .del-change { display: flex; }
   .del-option .del-change span {
@@ -481,8 +482,7 @@
   /* --- Тултип «Потрібно обрати відділення» --- */
   .del-tooltip {
     position: absolute;
-    left: 50%; top: -44px;
-    transform: translateX(-50%);
+    left: 0; bottom: calc(100% + 8px);
     background: #1b1b1b;
     color: #fff;
     font-weight: 500; font-size: 13px; line-height: 16px;
@@ -498,8 +498,7 @@
   .del-tooltip::after {
     content: '';
     position: absolute;
-    left: 50%; bottom: -6px;
-    transform: translateX(-50%);
+    left: 24px; bottom: -6px;
     width: 12px; height: 6px;
     background: #1b1b1b;
     clip-path: polygon(0 0, 100% 0, 50% 100%);
@@ -761,7 +760,6 @@
 
           <!-- 1. Відділення або поштомат -->
           <div class="del-option active" data-option="dept" id="optDept">
-            <div class="del-tooltip" id="tooltipDept">Потрібно обрати відділення</div>
             <div class="del-icon">
               <img src="assets/NP_logo_40x40.svg" alt="">
             </div>
@@ -771,6 +769,7 @@
               <div class="del-expand">
                 <div class="del-change" onclick="event.stopPropagation()">
                   <span>Обрати адресу</span>
+                  <div class="del-tooltip" id="tooltipDept">Потрібно обрати відділення</div>
                 </div>
               </div>
             </div>
@@ -783,7 +782,6 @@
 
           <!-- 2. Кур'єр -->
           <div class="del-option" data-option="courier" id="optCourier">
-            <div class="del-tooltip" id="tooltipCourier">Потрібно обрати адресу</div>
             <div class="del-icon">
               <img src="assets/Courier_logo_40x40.svg" alt="">
             </div>
@@ -793,6 +791,7 @@
               <div class="del-expand">
                 <div class="del-change" onclick="event.stopPropagation()">
                   <span>Обрати адресу</span>
+                  <div class="del-tooltip" id="tooltipCourier">Потрібно обрати адресу</div>
                 </div>
               </div>
             </div>
@@ -805,7 +804,6 @@
 
           <!-- 3. Самовивіз -->
           <div class="del-option" data-option="pickup" id="optPickup">
-            <div class="del-tooltip" id="tooltipPickup">Потрібно обрати магазин</div>
             <div class="del-icon">
               <img src="assets/KTC_logo_40x40.svg" alt="">
             </div>
@@ -815,6 +813,7 @@
               <div class="del-expand">
                 <div class="del-change" onclick="event.stopPropagation()">
                   <span>Обрати магазин</span>
+                  <div class="del-tooltip" id="tooltipPickup">Потрібно обрати магазин</div>
                 </div>
               </div>
             </div>
