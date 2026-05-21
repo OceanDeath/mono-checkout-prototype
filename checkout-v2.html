@@ -478,6 +478,36 @@
     letter-spacing: -0.0448px; color: #306eff;
   }
 
+  /* --- Тултип «Потрібно обрати відділення» --- */
+  .del-tooltip {
+    position: absolute;
+    left: 50%; top: -44px;
+    transform: translateX(-50%);
+    background: #1b1b1b;
+    color: #fff;
+    font-weight: 500; font-size: 13px; line-height: 16px;
+    letter-spacing: -0.02px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 10;
+  }
+  .del-tooltip::after {
+    content: '';
+    position: absolute;
+    left: 50%; bottom: -6px;
+    transform: translateX(-50%);
+    width: 12px; height: 6px;
+    background: #1b1b1b;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+  }
+  .del-tooltip.show {
+    opacity: 1;
+  }
+
   /* --- Индикатор справа: радиобаттон --- */
   .del-option .del-indicator {
     position: absolute;
@@ -731,6 +761,7 @@
 
           <!-- 1. Відділення або поштомат -->
           <div class="del-option active" data-option="dept" id="optDept">
+            <div class="del-tooltip" id="tooltipDept">Потрібно обрати відділення</div>
             <div class="del-icon">
               <img src="assets/NP_logo_40x40.svg" alt="">
             </div>
@@ -752,6 +783,7 @@
 
           <!-- 2. Кур'єр -->
           <div class="del-option" data-option="courier" id="optCourier">
+            <div class="del-tooltip" id="tooltipCourier">Потрібно обрати адресу</div>
             <div class="del-icon">
               <img src="assets/Courier_logo_40x40.svg" alt="">
             </div>
@@ -773,6 +805,7 @@
 
           <!-- 3. Самовивіз -->
           <div class="del-option" data-option="pickup" id="optPickup">
+            <div class="del-tooltip" id="tooltipPickup">Потрібно обрати магазин</div>
             <div class="del-icon">
               <img src="assets/KTC_logo_40x40.svg" alt="">
             </div>
@@ -896,11 +929,49 @@
     });
   });
 
-  // === «Продовжити» → открыть модал оплаты ===
+  // === «Продовжити» → показать тултип если адрес не выбран ===
+  // Стейт: адрес не выбран ни для одного способа (прототип)
+  const addressSelected = { dept: false, courier: false, pickup: false };
+  const tooltipMap = {
+    dept: document.getElementById('tooltipDept'),
+    courier: document.getElementById('tooltipCourier'),
+    pickup: document.getElementById('tooltipPickup')
+  };
+
   const continueBtn = document.getElementById('continueBtn');
   const paymentModal = document.getElementById('paymentModal');
+
+  function hideAllTooltips() {
+    Object.values(tooltipMap).forEach(t => t.classList.remove('show'));
+  }
+
   continueBtn.addEventListener('click', () => {
-    paymentModal.classList.add('open');
+    // Найти активную опцию
+    const activeOpt = document.querySelector('.del-option.active');
+    const optionKey = activeOpt ? activeOpt.dataset.option : 'dept';
+
+    if (!addressSelected[optionKey]) {
+      // Показать тултип на активной опции
+      hideAllTooltips();
+      const tooltip = tooltipMap[optionKey];
+      if (tooltip) {
+        tooltip.classList.add('show');
+        // Проскроллить к опции
+        activeOpt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Автохайд через 3с
+        setTimeout(() => tooltip.classList.remove('show'), 3000);
+      }
+    } else {
+      // Адрес выбран — открыть модал оплаты
+      hideAllTooltips();
+      paymentModal.classList.add('open');
+    }
+  });
+
+  // При переключении опций — скрыть тултипы
+  delOptions.forEach(opt => {
+    const origClick = opt.onclick;
+    opt.addEventListener('click', () => hideAllTooltips());
   });
   // Закрыть модал
   document.getElementById('paymentCollapseBtn').addEventListener('click', () => {
