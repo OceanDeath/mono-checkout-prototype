@@ -955,8 +955,6 @@
       const tooltip = tooltipMap[optionKey];
       if (tooltip) {
         tooltip.classList.add('show');
-        // Проскроллить к опции
-        activeOpt.scrollIntoView({ behavior: 'smooth', block: 'center' });
         // Автохайд через 3с
         setTimeout(() => tooltip.classList.remove('show'), 3000);
       }
